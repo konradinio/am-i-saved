@@ -1,8 +1,8 @@
 // Placeholder — AI Full Report generation endpoint.
 // TODO (Milestone 8): Implement real OpenAI call, verify payment server-side, persist result.
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(_req: NextRequest) {
+export async function POST() {
   // TODO (Milestone 8): Parse assessmentId from request body (Zod validation)
   // TODO (Milestone 8): Verify user session (server-side)
   // TODO (Milestone 8): Verify payment status from Supabase (NEVER trust client)

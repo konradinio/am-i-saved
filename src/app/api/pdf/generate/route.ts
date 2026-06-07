@@ -1,9 +1,9 @@
 // Placeholder — PDF generation endpoint.
 // React-PDF must run inside an API route (server-side), never in a Server Component.
 // TODO (Milestone 9): Implement real PDF generation using @react-pdf/renderer.
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(_req: NextRequest) {
+export async function POST() {
   // TODO (Milestone 9): Parse assessmentId from request body (Zod validation)
   // TODO (Milestone 9): Verify user session and payment status (server-side)
   // TODO (Milestone 9): Generate PDF with @react-pdf/renderer

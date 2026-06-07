@@ -1,8 +1,8 @@
 // Placeholder — Stripe Checkout session creation endpoint.
 // TODO (Milestone 7): Implement real Stripe Checkout session, verify auth, persist payment record.
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(_req: NextRequest) {
+export async function POST() {
   // TODO (Milestone 7): Parse product and metadata from request body (Zod validation)
   // TODO (Milestone 7): Verify user session (server-side)
   // TODO (Milestone 7): Create Stripe Checkout session (server-side only, secret key)
