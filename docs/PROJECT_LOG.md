@@ -5,6 +5,37 @@ A running record of meaningful project history, decisions, and milestones.
 
 ---
 
+## 2026-06-07 — Project Memory System Established
+
+**Type:** Documentation governance
+**Status:** Complete
+
+### Summary
+
+Created two permanent documentation files to enable cross-session development
+continuity. Future Claude sessions must never depend on chat history — all
+project knowledge lives inside the repository.
+
+- **`docs/DEVELOPMENT_HISTORY.md`** — The authoritative permanent historical record.
+  Covers all technology selections and rationale, all commands executed, full
+  repository structure, all errors encountered and fixed, full git history,
+  all known placeholders, active risks, and a chronological development timeline.
+  Updated at every milestone completion.
+
+- **`docs/CLAUDE_SESSION_HANDOFF.md`** — The operational handoff document for
+  future Claude sessions. NOT historical. Answers "what does the next session need
+  to know immediately?" Covers current project snapshot, environment status,
+  pending integrations, required credentials, open issues, active risks, and
+  a Session Bootstrap Prompt for copy-paste use.
+
+### Documentation Governance Rule Added
+
+`CLAUDE.md` updated with mandatory end-of-milestone documentation update rule:
+at the end of every milestone, four files must be updated:
+`PROJECT_LOG.md`, `ACTIVE_MILESTONE.md`, `DEVELOPMENT_HISTORY.md`, `CLAUDE_SESSION_HANDOFF.md`.
+
+---
+
 ## 2026-06-06 — Milestone 1: Foundation Complete
 
 **Milestone:** 1 — Foundation

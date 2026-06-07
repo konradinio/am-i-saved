@@ -1,328 +1,279 @@
----
 # Claude Session Handoff
-## Am I Saved? — New Session Quick-Start Guide
+## Am I Saved?
 
 **Last updated:** 2026-06-07
-**Current milestone:** M1 Complete — M2 Not Started
+**Purpose:** Operational handoff for future Claude sessions. NOT historical.
+For full history see `docs/DEVELOPMENT_HISTORY.md`.
 
-> This file is the first thing a new Claude session should read.
-> It summarizes everything needed to continue development without prior context.
-> After reading this file, read: ARCHITECTURE_MASTER.md, ACTIVE_MILESTONE.md,
-> PROJECT_LOG.md, and the current milestone spec doc.
+> This file answers: "If a new Claude session starts tomorrow, what does it need to know immediately?"
 
 ---
 
-## 1. Who You Are Working With
+## Session Bootstrap Prompt
 
-- **Developer:** Konrad (konradinio@gmail.com)
-- **Project:** Am I Saved? — a Christian spiritual reflection web application
-- **Working directory:** `c:\PRIV\MyAPPS\am-i-saved`
-- **Platform:** Windows 11 Enterprise, PowerShell + Bash available
-- **Node.js:** v24.15.0 | npm 11.12.1
+**Copy and paste this at the start of any new Claude session:**
+
+```
+Before doing anything else, read these files in order:
+
+1. docs/CLAUDE_SESSION_HANDOFF.md      ← Start here (this file)
+2. CLAUDE.md                            ← AI session rules
+3. docs/ACTIVE_MILESTONE.md            ← What are we working on right now?
+4. docs/ARCHITECTURE_MASTER.md         ← Full technical architecture
+5. docs/PROJECT_LOG.md                 ← Key decisions made so far
+6. docs/DEVELOPMENT_HISTORY.md         ← Full project history if needed
+
+Do not write any code or make any changes until you have read all six files
+and confirmed the current milestone, current status, and open issues.
+```
 
 ---
 
-## 2. Project Identity (Never Change These)
+## 1. Project Snapshot
 
 | Field | Value |
 |---|---|
-| Public product name | **Am I Saved?** |
-| Technical project name | `am-i-saved` |
-| GitHub repo | `https://github.com/konradinio/am-i-saved.git` |
-| Vercel project | `am-i-saved` (not yet linked) |
-| Supabase project | `am-i-saved` (not yet created) |
-| Git branch | `main` |
+| **Product name** | Am I Saved? |
+| **Technical name** | `am-i-saved` |
+| **GitHub remote** | `https://github.com/konradinio/am-i-saved.git` |
+| **Current branch** | `main` |
+| **Current milestone** | **M1 — Complete. M2 — Not started.** |
+| **Current status** | Holding at M1. Awaiting instruction to begin M2. |
+| **Last commit** | `89da4f7` — `docs: establish permanent Claude session memory system` |
+| **TypeScript** | Zero errors |
+| **ESLint** | Zero warnings |
 
----
+### Permanent Spiritual Safety Constraint
 
-## 3. Permanent Spiritual Safety Constraint
-
-**This constraint is permanent. It overrides everything. It must never be removed or weakened.**
-
-> The platform must NEVER claim certainty regarding salvation.
 > The platform must NEVER declare whether a person is saved or not saved.
-> The platform must NEVER declare that a person is destined for heaven or hell.
-> Only God knows the human heart.
+> The platform must NEVER claim certainty about heaven, hell, or divine judgment.
+> Core purpose: *Not certainty about heaven, but clarity about your soul.*
 
-**Enforced at code level:** `SPIRITUAL_SAFETY_DISCLAIMER` constant in
-`src/lib/ai/openai.ts` must be injected into every AI prompt.
-
-**Core tagline:** *Not certainty about heaven, but clarity about your soul.*
+This is a hard architectural constraint, not a style preference.
+`SPIRITUAL_SAFETY_DISCLAIMER` in `src/lib/ai/openai.ts` must be injected into every AI prompt.
 
 ---
 
-## 4. Technology Stack (Quick Reference)
+## 2. Architecture Summary
 
-| Technology | Version | Notes |
+**Stack:** Next.js 16.2.7 (App Router) + TypeScript (strict) + Tailwind CSS v4 + shadcn/ui
+**Database:** Supabase PostgreSQL + Auth + Storage
+**Payments:** Stripe (Checkout + webhooks)
+**AI:** OpenAI (server-side only, prompt versioning)
+**Email:** Resend (signed URLs only, no report content in body)
+**Charts:** Recharts (all chart components require `"use client"`)
+**PDF:** React-PDF (`@react-pdf/renderer`) — API routes ONLY, never RSC
+**Validation:** Zod at all system boundaries
+**Hosting:** Vercel (not yet linked)
+
+**Design palette:** Navy `#0f1f3c` · Gold `#c9973a` · Ivory `#f5f0e8`
+
+**Full architecture:** `docs/ARCHITECTURE_MASTER.md`
+
+---
+
+## 3. Current Environment
+
+| System | Status | Notes |
 |---|---|---|
-| Next.js | 16.2.7 | App Router, RSC, Server Actions |
-| TypeScript | ^5 | Strict mode — no `any` |
-| Tailwind CSS | ^4 | `@theme` in `globals.css` — no `tailwind.config.js` |
-| shadcn/ui | 4.10.0 | Components in `src/components/ui/` |
-| Supabase | `@supabase/ssr@0.10.3` | `createBrowserClient` / `createServerClient` |
-| Stripe | `stripe@22.2.0` / `@stripe/stripe-js@9.7.0` | Server secret / browser publishable |
-| OpenAI | `openai@6.42.0` | Server-side only |
-| Resend | `resend@6.12.4` | Transactional email |
-| Recharts | `recharts@3.8.1` | All chart components need `"use client"` |
-| React-PDF | `@react-pdf/renderer@4.5.1` | API routes only — never in RSC |
-| Zod | `zod@4.4.3` | All system boundaries |
+| **Git** | ✅ Initialized | 4 commits on `main` |
+| **GitHub** | ⚠️ Remote set, not pushed | Remote exists; no push performed yet |
+| **Supabase** | ❌ Not created | Must create project before M2 |
+| **Vercel** | ❌ Not linked | Must link before first deployment |
+| **Local dev** | ✅ Runnable | `npm run dev` → `http://localhost:3000` |
+| **TypeScript** | ✅ Clean | `npx tsc --noEmit` → zero errors |
+| **ESLint** | ✅ Clean | `npm run lint` → zero warnings |
+| **`.env.local`** | ❌ Not created | Must copy from `.env.example` and fill values |
+
+**Node.js:** v24.15.0 | **npm:** 11.12.1 | **Platform:** Windows 11, `c:\PRIV\MyAPPS\am-i-saved`
 
 ---
 
-## 5. Critical Rules — Do Not Violate
+## 4. Completed Work
 
-1. **React-PDF** — import only inside API routes. Never in Server Components or Client Components.
-2. **Recharts** — all chart components must have `"use client"` directive.
-3. **OpenAI / Stripe secret key / Supabase service role key** — server-side only. Never in Client Components.
-4. **Next.js 16 dynamic params** — `params` in page components are `Promise<{...}>` — must `await` them.
-5. **Payment status** — never trust client-reported payment status. Only trust Stripe webhook + database.
-6. **Stripe webhook** — always verify signature with `STRIPE_WEBHOOK_SECRET`. Never process unverified events.
-7. **AI output** — always inject `SPIRITUAL_SAFETY_DISCLAIMER`. Never declare salvation status.
-8. **Zod** — validate all input at system boundaries (API routes, Server Actions).
-9. **Two-commit rule** — every milestone produces: (1) docs-only commit, (2) code commit.
-10. **ESLint rule** — `_param` underscore prefix convention is NOT configured. Remove unused parameters instead.
-11. **Tailwind v4** — use `@theme` directive in CSS. Do not create `tailwind.config.js`.
-12. **Supabase** — use `@supabase/ssr`, not deprecated auth helpers. `createBrowserClient` for client, `createServerClient` for server.
+### Milestone 1 — Foundation ✅ (2026-06-06)
 
----
-
-## 6. Current Project State
-
-### Milestone 1 — Complete ✅
-
-Everything in M1 is scaffolding and placeholders. No real business logic exists yet.
-
-**TypeScript:** Zero errors (`npx tsc --noEmit` clean)
-**ESLint:** Zero warnings (`npm run lint` clean)
-
-### What Is Real (Not Placeholder)
-
-- Homepage (`src/app/page.tsx`) — full hero, CTAs, feature cards, disclaimer
+- Next.js 16.2.7 scaffolded with TypeScript strict, Tailwind v4, shadcn/ui
+- Full `src/` folder structure created
+- Homepage — full implementation (hero, CTAs, 6 feature cards, disclaimer)
 - Header, Footer, Navigation components — fully implemented
-- Root layout (`src/app/layout.tsx`) — Geist fonts, metadata, design tokens
-- `globals.css` — brand colors, `@theme` directive
-- Domain types (`src/types/index.ts`) — 10 fully typed entities
-- `SPIRITUAL_SAFETY_DISCLAIMER` in `src/lib/ai/openai.ts` — permanent constant
-- All documentation files — 24 files in `docs/`
+- Root layout with Geist fonts and brand design tokens
+- 20 placeholder pages (all routes stubbed, no business logic)
+- 6 placeholder API route handlers (all return `{ ok: true, message: "Placeholder endpoint." }`)
+- 8 typed service stub files (`supabase/client`, `supabase/server`, `stripe/client`, `stripe/server`, `ai/openai`, `email/resend`, `pdf/generate-report-pdf`, `auth/require-user`)
+- 10 domain TypeScript types in `src/types/index.ts`
+- `SpiritualRadarChart` — Recharts radar chart with mock data
+- `.env.example`, `.gitignore`, `README.md`
+- 26 documentation files in `docs/`
+- Git initialized, 4 commits
 
-### What Is Placeholder
+### Post-M1 Cleanup (2026-06-07)
 
-- All 20 pages except homepage — return a styled placeholder div
-- All 6 API route handlers — return `{ ok: true, message: "Placeholder endpoint." }`
-- `requireUser()` — always redirects to `/login` (no real auth)
-- All service stub functions — clients initialized but no functions implemented
-- `SpiritualRadarChart` — uses hardcoded mock data
-
-### What Does Not Exist Yet
-
-- Supabase project (must create before M2)
-- Any database tables or migrations
-- Authentication (M2)
-- Questionnaire engine (M4)
-- Any AI calls (M5)
-- Any Stripe integration (M7)
-- Vercel deployment (future)
+- Fixed 6 ESLint warnings in placeholder API routes (removed unused `req` parameters)
+- Created `docs/DEVELOPMENT_HISTORY.md` — permanent project record
+- Created `docs/CLAUDE_SESSION_HANDOFF.md` — this file
 
 ---
 
-## 7. Environment Variables Required
+## 5. In Progress
 
-All env vars are documented in `.env.example`. Copy to `.env.local` before running.
+**Nothing is currently in progress.**
 
-```bash
-cp .env.example .env.local
-# Then fill in real values
-```
+M1 is complete. The project is held at M1 awaiting instruction to begin M2.
 
-| Variable | Required For | Source |
+---
+
+## 6. Open Issues
+
+| Issue | Priority | Resolution |
 |---|---|---|
-| `NEXT_PUBLIC_APP_URL` | SEO, email links | Local: `http://localhost:3000` |
-| `NEXT_PUBLIC_SUPABASE_URL` | All Supabase | Supabase dashboard |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase browser | Supabase dashboard |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server-only Supabase | Supabase dashboard |
-| `DATABASE_URL` | Direct DB access | Supabase dashboard |
-| `OPENAI_API_KEY` | AI generation | OpenAI platform |
-| `STRIPE_SECRET_KEY` | Stripe server | Stripe dashboard |
-| `STRIPE_WEBHOOK_SECRET` | Webhook verification | Stripe CLI / dashboard |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe browser | Stripe dashboard |
-| `RESEND_API_KEY` | Email delivery | Resend dashboard |
-| `EMAIL_FROM` | Email sender | Verified domain in Resend |
-| `PDF_STORAGE_BUCKET` | PDF storage | Value: `reports` |
+| GitHub remote not pushed | Medium | Run `git push -u origin main` when ready |
+| Supabase project not created | High | Required before M2 can begin |
+| Vercel project not linked | Medium | Required before first deployment |
+| `.env.local` not created | High | Required before `npm run dev` with real services |
+| No `.gitattributes` | Low | CRLF warnings on every commit (Windows); add in M2 |
+| No rate limiting | High | Add in M2 or M3 |
+| No error boundary components | Medium | Add in M2 |
+| No loading state components | Medium | Add in M2 |
+| `requireUser()` is a redirect stub | High | Real auth in M2 — all "protected" routes currently unprotected |
 
 ---
 
-## 8. How to Run Locally
+## 7. Current Risks
 
-```bash
-# Install dependencies (if not already installed)
-npm install
-
-# Copy env file and fill in values
-cp .env.example .env.local
-
-# Start dev server
-npm run dev
-# → http://localhost:3000
-
-# TypeScript check
-npx tsc --noEmit
-
-# ESLint
-npm run lint
-
-# Production build test
-npm run build
-```
-
----
-
-## 9. Git State
-
-| Field | Value |
-|---|---|
-| Branch | `main` |
-| Latest commit | `0bcc91f` — `chore: create initial project foundation` |
-| Remote | `https://github.com/konradinio/am-i-saved.git` |
-| Push status | Not yet pushed to remote |
-
-### Two-Commit Convention (Every Milestone)
-
-```bash
-# Commit 1 — docs only
-git add docs/
-git commit -m "docs: <milestone description>"
-
-# Commit 2 — all code
-git add -A
-git commit -m "feat: <milestone description>"
-```
-
----
-
-## 10. Design System
-
-### Colors
-
-| Name | Hex | Tailwind usage |
+| Risk | Severity | Mitigation |
 |---|---|---|
-| Deep Navy | `#0f1f3c` | `bg-navy`, `text-navy` |
-| Warm Gold | `#c9973a` | `bg-gold`, `text-gold` |
-| Soft Ivory | `#f5f0e8` | `bg-ivory`, `text-ivory` |
+| Local git not pushed | Medium | Data loss risk. Push to GitHub as first step. |
+| Supabase project doesn't exist | High | M2 cannot start without it. Create before coding. |
+| No test suite | High | Add Vitest + Playwright starting M3 |
+| No real authentication | High | Every "protected" route is actually public right now |
+| Stripe `apiVersion` not pinned | Low | Will be set explicitly in M7 |
+| `src/lib/utils.ts` vs `src/lib/utils/index.ts` | Low | Both coexist; shadcn imports from `utils.ts`, custom code from `utils/index.ts` |
 
-Defined in `src/app/globals.css` under `@theme`:
-```css
-@theme {
-  --color-navy: #0f1f3c;
-  --color-gold: #c9973a;
-  --color-ivory: #f5f0e8;
-}
+---
+
+## 8. Pending Integrations
+
+### Supabase
+
+**Status:** Not created.
+
+**What's needed before M2:**
+1. Create project at supabase.com (name: `am-i-saved`)
+2. Copy Project URL → `NEXT_PUBLIC_SUPABASE_URL` in `.env.local`
+3. Copy anon key → `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`
+4. Copy service role key → `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`
+5. Enable Email provider in Supabase Auth settings
+6. Configure Magic Link redirect URL to `http://localhost:3000/auth/callback`
+
+**What's already built:** `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts` — both are stubs waiting for real credentials.
+
+### Stripe
+
+**Status:** Not integrated. SDK installed.
+
+**What's needed before M7:**
+1. Create/access Stripe account
+2. Copy secret key → `STRIPE_SECRET_KEY`
+3. Copy publishable key → `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+4. Create products in Stripe dashboard (Full Report, Gift Code, Coaching Session)
+5. Set up webhook endpoint → `STRIPE_WEBHOOK_SECRET`
+
+**What's already built:** `src/lib/stripe/client.ts` and `src/lib/stripe/server.ts` — initialized, no functions yet.
+
+### OpenAI
+
+**Status:** Not integrated. SDK installed.
+
+**What's needed before M5:**
+1. Create/access OpenAI API key
+2. Copy → `OPENAI_API_KEY` in `.env.local`
+
+**What's already built:** `src/lib/ai/openai.ts` — client initialized, `SPIRITUAL_SAFETY_DISCLAIMER` and `PROMPT_VERSION = "v1.0.0"` defined.
+
+### Resend
+
+**Status:** Not integrated. SDK installed.
+
+**What's needed before M10:**
+1. Create/access Resend account
+2. Verify sending domain
+3. Copy API key → `RESEND_API_KEY`
+4. Set `EMAIL_FROM` to verified sender address
+
+**What's already built:** `src/lib/email/resend.ts` — client initialized, `EMAIL_FROM` constant from env.
+
+### Vercel
+
+**Status:** Not linked.
+
+**What's needed before first deployment:**
+1. Create Vercel project named `am-i-saved`
+2. Link GitHub repo for automatic deployments
+3. Add all environment variables from `.env.example` to Vercel project settings
+4. Configure custom domain (when ready)
+
+---
+
+## 9. Required Credentials
+
+**Never store secrets in source code or this file. All secrets go in `.env.local` only.**
+
+| Credential | Environment Variable | Where to Get |
+|---|---|---|
+| Supabase Project URL | `NEXT_PUBLIC_SUPABASE_URL` | Supabase dashboard → Project Settings → API |
+| Supabase anon key | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Same |
+| Supabase service role key | `SUPABASE_SERVICE_ROLE_KEY` | Same (keep secret) |
+| Supabase DB URL | `DATABASE_URL` | Supabase dashboard → Settings → Database |
+| OpenAI API key | `OPENAI_API_KEY` | platform.openai.com |
+| Stripe secret key | `STRIPE_SECRET_KEY` | dashboard.stripe.com → API keys |
+| Stripe publishable key | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Same |
+| Stripe webhook secret | `STRIPE_WEBHOOK_SECRET` | Stripe → Webhooks |
+| Resend API key | `RESEND_API_KEY` | resend.com |
+| Email sender address | `EMAIL_FROM` | Verified domain in Resend |
+| App base URL | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` locally |
+| PDF bucket name | `PDF_STORAGE_BUCKET` | Value: `reports` |
+
+See `.env.example` for the full template.
+
+---
+
+## 10. Recommended Next Step
+
+**Before writing any M2 code:**
+
+1. `git push -u origin main` — push all 4 local commits to GitHub
+2. Create Supabase project at supabase.com (name: `am-i-saved`)
+3. Copy credentials into `.env.local`
+4. `npm run dev` — confirm the app runs with real Supabase credentials
+5. Then begin M2 — Authentication
+
+**M2 bootstrap prompt** (from `docs/DEVELOPMENT_HISTORY.md` Section 12):
+
+```
+Implement Milestone 2 — Authentication.
+Reference: docs/MILESTONE_02_AUTH.md, docs/ARCHITECTURE_MASTER.md, docs/security.md.
+Pre-requisites confirmed: Supabase project created, .env.local populated.
 ```
 
-Body default: `bg-navy text-ivory` (set in `src/app/layout.tsx`).
-
-### Typography
-
-Geist Sans and Geist Mono (Google Fonts / Next.js font optimization).
-
-### Component Library
-
-shadcn/ui components in `src/components/ui/`. Add new components with:
-```bash
-npx shadcn@4.10.0 add <component-name>
-```
-
 ---
 
-## 11. Folder Map (Key Files Only)
+## 11. Handoff Summary
 
-```
-src/lib/ai/openai.ts           ← PROMPT_VERSION + SPIRITUAL_SAFETY_DISCLAIMER
-src/lib/auth/require-user.ts   ← requireUser() stub (M2 will make this real)
-src/lib/supabase/client.ts     ← createBrowserClient (Client Components)
-src/lib/supabase/server.ts     ← createServerClient (Server Components, API routes)
-src/lib/stripe/client.ts       ← getStripe() singleton (browser, publishable key)
-src/lib/stripe/server.ts       ← stripe instance (server only, secret key)
-src/lib/pdf/generate-report-pdf.ts  ← placeholder, returns { ok: false }
-src/lib/validation/schemas.ts  ← Zod base schemas (add per-feature schemas in M3+)
-src/types/index.ts             ← All domain TypeScript types
-src/app/globals.css            ← Tailwind v4 @theme + brand tokens
-src/app/layout.tsx             ← Root layout (fonts, metadata, Header, Footer)
-src/app/page.tsx               ← Homepage (full implementation)
-```
+Am I Saved? is a Christian spiritual reflection platform. Milestone 1 (Foundation) is
+complete as of 2026-06-06. The codebase is a fully-typed Next.js 16.2.7 App Router
+project with Tailwind CSS v4, shadcn/ui, and typed service stubs for every third-party
+integration. All 20 application pages and 6 API routes are placeholders. No real
+business logic, authentication, database, or payments exist yet.
 
----
+The project is in a clean, committed, lint-free, TypeScript-clean state. It has not
+been pushed to GitHub and has no live services connected.
 
-## 12. Domain Types (Reference)
+The immediate blocker before Milestone 2 can begin is creating the Supabase project
+and populating `.env.local`. No code changes are required first.
 
-All types in `src/types/index.ts`:
+The permanent spiritual safety constraint — the platform must never declare whether
+a person is saved or not saved — is enforced at the code level in `src/lib/ai/openai.ts`
+and must never be removed.
 
-- `UserProfile` — user identity and denomination
-- `Denomination` — `catholic | protestant | orthodox | non_denominational | non_christian | unsure`
-- `Assessment` — assessment session with status lifecycle
-- `AssessmentStatus` — `in_progress | submitted | summary_ready | paid | full_report_ready`
-- `AssessmentResponse` — individual question answer
-- `QuestionType` — `single_choice | multiple_choice | likert | free_text`
-- `AIReport` — generated report with prompt version tracking
-- `ExecutiveSummaryContent` — free-tier AI report structure
-- `FullReportContent` — paid-tier AI report structure
-- `CategoryReport` — per-category analysis within full report
-- `Payment` — Stripe payment record
-- `PaymentProduct` — `full_report | gift_assessment | coaching_session | sponsored_coaching`
-- `GiftCode` — gift assessment code with redemption state
-- `ConscienceSession` — examination of conscience session
-- `CoachingBooking` — coaching session booking
-- `CoachingSponsorship` — sponsorship record
-- `ChartDataPoint` — `{ category: SpiritualCategory, score: number, fullMark: number }`
-- `SpiritualCategory` — `Faith | Prayer | Charity | Forgiveness | Humility | Scripture | Community | Repentance`
-- `ApiResponse<T>` — standard API response shape (`ok: true | false`)
-
----
-
-## 13. Next Milestone: M2 — Authentication
-
-**Pre-requisites before starting M2:**
-1. Supabase project created at supabase.com
-2. `.env.local` populated with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-3. Supabase email provider configured in dashboard
-
-**M2 scope** (see `docs/MILESTONE_02_AUTH.md` for full spec):
-- `src/middleware.ts` — session refresh + route protection
-- Real login page — `supabase.auth.signInWithPassword()` + magic link
-- Real register page — `supabase.auth.signUp()`
-- Real account page — authenticated user view + sign out
-- Real `requireUser()` in `src/lib/auth/require-user.ts`
-- Server Actions for signIn / signUp / signOut
-- `.gitattributes` for CRLF line ending fix
-
----
-
-## 14. Documentation Files to Read for Full Context
-
-In priority order for a new session:
-
-1. **This file** — `docs/CLAUDE_SESSION_HANDOFF.md` (you are reading it)
-2. `CLAUDE.md` — AI session instructions (points to `AGENTS.md`)
-3. `docs/ACTIVE_MILESTONE.md` — current milestone status
-4. `docs/ARCHITECTURE_MASTER.md` — full stack, principles, data flow, security
-5. `docs/PROJECT_LOG.md` — decisions made so far
-6. `docs/DEVELOPMENT_HISTORY.md` — complete historical record
-7. `docs/MILESTONE_0N_*.md` — spec for the current milestone being worked
-8. `docs/prompts.md` — AI safety rules (read before any AI work)
-9. `docs/security.md` — security requirements (read before auth/payments work)
-
----
-
-## 15. Common Mistakes to Avoid
-
-| Mistake | Correct Approach |
-|---|---|
-| Importing React-PDF in a Server Component | Only import in `/api/pdf/generate/route.ts` |
-| Recharts component without `"use client"` | Always add `"use client"` to chart components |
-| Trusting `params` as synchronous in Next.js 16 pages | Always `await params` — it is a `Promise` |
-| Using `any` in TypeScript | Use proper types from `src/types/index.ts` |
-| Naming unused params with `_prefix` | Remove the parameter entirely; ESLint won't accept `_prefix` |
-| Creating `tailwind.config.js` | v4 uses `@theme` in `globals.css` only |
-| Using `@supabase/auth-helpers-nextjs` | Use `@supabase/ssr` instead |
-| Starting Milestone N+1 before Milestone N is confirmed complete | Always wait for explicit approval |
-| Hardcoding secrets in source code | Always use `process.env.VARIABLE_NAME` |
-| Calling AI from a Client Component | All AI calls must be in Server Actions or API routes |
+**Next action:** Push to GitHub → Create Supabase project → Begin M2.

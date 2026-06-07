@@ -1,7 +1,7 @@
 # Active Milestone
 ## Am I Saved?
 
-**Last updated:** 2026-06-06
+**Last updated:** 2026-06-07
 
 ---
 
@@ -44,6 +44,19 @@
 | prompts.md | Done |
 | MILESTONE_01 through MILESTONE_14 docs | Done |
 | Git initialized with 2 commits | Done |
+
+---
+
+## Project Memory System
+
+The following files exist to support cross-session development continuity:
+
+| File | Purpose |
+|---|---|
+| `docs/DEVELOPMENT_HISTORY.md` | Permanent historical record — technology decisions, commands, git log, errors, timeline |
+| `docs/CLAUDE_SESSION_HANDOFF.md` | Operational handoff — current state, environment status, open issues, session bootstrap prompt |
+
+A new Claude session should read `CLAUDE_SESSION_HANDOFF.md` first.
 
 ---
 
