@@ -1,9 +1,10 @@
 # Architecture Master Document
 ## Am I Saved? — Christian Spiritual Reflection Platform
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Created:** 2026-06-06
-**Milestone:** 1 — Foundation
+**Last updated:** 2026-06-08
+**Milestone:** 2 — Authentication
 
 ---
 
@@ -126,12 +127,32 @@ Private (server only):       Supabase service role key, OpenAI key, Stripe secre
 Never in source code:        All of the above — .env.local only
 ```
 
+### Next.js 16 Proxy (Breaking Change)
+
+`middleware.ts` is deprecated in Next.js v16.0.0 and renamed to `proxy.ts`.
+The exported function must be named `proxy` (not `middleware`).
+
+```ts
+// src/proxy.ts  ← correct (Next.js 16)
+export async function proxy(request: NextRequest) { ... }
+```
+
+Do NOT create `src/middleware.ts` — it will silently do nothing in v16.
+
 ### Authentication Flow (M2+)
-1. User requests magic link or OTP via email
-2. Supabase Auth handles token generation and verification
-3. Session cookie set server-side via @supabase/ssr
-4. All protected routes call `requireUser()` — server-side session check
-5. Client never trusted for auth state
+1. User chooses password login or magic link on `/login`
+2. Password: `signInWithPassword` via Supabase Auth
+3. Magic link: `signInWithOtp` → email sent → user clicks → `/auth/callback` exchanges code for session
+4. `proxy.ts` calls `auth.getUser()` on every request to refresh the session cookie
+5. Protected routes call `requireUser()` — server-side session verification
+6. Client-side auth state is never trusted
+7. Anonymous users can access all assessment routes (auth presented at full report paywall — M7)
+
+### Anonymous-First Flow
+
+Assessment routes (`/assessment/*`) are intentionally public. Users can complete
+assessments without an account. Authentication is offered at the upgrade prompt
+(full report paywall). This reduces friction and maximizes assessment completion rate.
 
 ### Payment Security (M7+)
 1. Checkout session created server-side with Stripe secret key

@@ -42,6 +42,38 @@ Spiritual assessment data is among the most sensitive personal data a user can s
 
 ---
 
+## Authentication Security (Milestone 2+)
+
+### Session Management
+
+- Supabase session cookies are set and refreshed server-side via `@supabase/ssr`
+- `proxy.ts` calls `supabase.auth.getUser()` on every request to refresh the session token
+- Sessions are verified server-side via `requireUser()` — client-side auth state is never trusted
+- The service role key (`SUPABASE_SERVICE_ROLE_KEY`) bypasses RLS — used only in server-side admin operations, never in the browser
+
+### Open Redirect Protection
+
+The `?redirect=` query parameter on `/login` is validated before use:
+```ts
+const safePath = redirectTo.startsWith("/") ? redirectTo : "/account";
+```
+This prevents an attacker from using the login page to redirect users to external phishing sites.
+
+### Screenshot Blocking
+
+Screenshot and screen recording cannot be reliably blocked in a web application.
+Browser developer tools, OS-level screen capture, and third-party capture software
+all bypass any client-side prevention attempts. **This feature will NOT be implemented.**
+Users are warned that the platform cannot protect against external recording.
+
+### Next.js 16 Proxy vs Middleware
+
+`middleware.ts` is deprecated in Next.js 16. The file is now `proxy.ts`.
+Creating a `middleware.ts` file would silently do nothing in v16, leaving routes unprotected.
+This project uses only `src/proxy.ts`. Do not create `src/middleware.ts`.
+
+---
+
 ## Future RLS Requirement
 
 Row Level Security (RLS) on all Supabase tables is mandatory before any real user data is stored. This will be implemented in Milestone 3.

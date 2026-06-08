@@ -5,6 +5,68 @@ A running record of meaningful project history, decisions, and milestones.
 
 ---
 
+## 2026-06-08 — Milestone 2: Authentication Foundation Complete
+
+**Milestone:** 2 — Authentication
+**Status:** Complete
+
+### Summary of Changes
+
+Implemented full Supabase Auth using an anonymous-first strategy. Only `/account`
+is protected; all assessment routes remain publicly accessible so users can complete
+an assessment before deciding to create an account.
+
+### Architecture Decisions
+
+1. **`proxy.ts` not `middleware.ts`** — Next.js 16 broke `middleware.ts` in v16.0.0.
+   The file is now `src/proxy.ts` and the exported function must be named `proxy`.
+   This was a critical breaking change discovered by reading `node_modules/next/dist/docs/`.
+
+2. **Anonymous-first flow** — Assessment routes are public by design. Auth is
+   presented as an upgrade prompt when the user chooses to unlock the full report.
+   This lowers friction for new users and is the correct product architecture.
+
+3. **`user_metadata` for profile data** — Until M3 creates a `profiles` table,
+   `nickname`, `denomination`, and `age_range` are stored in Supabase `user_metadata`.
+   This avoids a DB schema dependency in M2.
+
+4. **Email + password AND Magic Link** — Original M2 spec was magic link only.
+   Actual implementation added password auth as primary option (better UX for
+   returning users) with magic link as an alternative. Toggle in `LoginForm`.
+
+5. **`useActionState` (React 19)** — Form state management uses the new React 19
+   hook. Imported from `react` (not `react-dom`). Required because forms are Client
+   Components that need to show loading and error states from Server Actions.
+
+6. **Open redirect protection** — The `?redirect=` param is validated to start
+   with `/` before being used. Prevents phishing via redirecting to external URLs.
+
+### Files Created
+
+- `src/proxy.ts` — session refresh + `/account` route protection
+- `src/app/auth/callback/route.ts` — Supabase OTP code exchange
+- `src/app/actions/auth.ts` — signIn, signUp, signInWithMagicLink, signOut
+- `src/components/auth/LoginForm.tsx` — password + magic link toggle (Client Component)
+- `src/components/auth/RegisterForm.tsx` — registration form (Client Component)
+
+### Files Modified
+
+- `src/lib/validation/schemas.ts` — added loginSchema, magicLinkSchema, registerSchema
+- `src/lib/auth/require-user.ts` — real Supabase implementation, expanded AuthUser type
+- `src/lib/supabase/client.ts` — removed TODO comments
+- `src/lib/supabase/server.ts` — removed TODO comments
+- `src/app/login/page.tsx` — replaced placeholder
+- `src/app/register/page.tsx` — replaced placeholder
+- `src/app/account/page.tsx` — real protected page with profile and disclaimer
+
+### Validation Results
+
+- `npx tsc --noEmit` → zero errors
+- `npm run lint` → zero warnings
+- `npm run build` → pass (32 routes compiled)
+
+---
+
 ## 2026-06-07 — Project Memory System Established
 
 **Type:** Documentation governance

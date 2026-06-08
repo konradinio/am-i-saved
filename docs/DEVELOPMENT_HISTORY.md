@@ -867,4 +867,56 @@ prior context.
 - Two-commit git strategy established as permanent convention
 
 **Known issues introduced:** 6 ESLint warnings (fixed same-day 2026-06-07)
+
+### Milestone 2 — Authentication Foundation (2026-06-08) ✅
+
+**Status:** Complete
+**TypeScript:** Zero errors
+**ESLint:** Zero warnings
+**Build:** Pass (32 routes)
+
+**Key decisions:**
+
+1. **`proxy.ts` not `middleware.ts`** — Next.js 16 deprecated `middleware.ts` in v16.0.0.
+   Critical discovery from reading `node_modules/next/dist/docs/proxy.md`.
+   The file is now `src/proxy.ts` and the exported function must be named `proxy`.
+   This was not documented externally — only discoverable from the Next.js 16 local docs.
+
+2. **Anonymous-first philosophy** — Only `/account` is protected. All assessment routes
+   (`/assessment/*`) are public so users can complete the questionnaire without creating
+   an account. Auth is offered at the full report paywall (M7). This decision differs
+   from the original M2 spec which assumed all routes would be protected.
+
+3. **`user_metadata` bridge** — Nickname, denomination, and age range are stored in
+   Supabase `user_metadata` as a temporary measure until M3 creates the `profiles` table.
+   The `requireUser()` function reads from `user_metadata` and maps to the `AuthUser` type.
+
+4. **Email + password added** — Original M2 spec was magic link only. Password auth
+   was added as the primary option. Magic link is a toggle in `LoginForm`.
+
+5. **Open redirect protection** — `?redirect=` parameter validated via
+   `redirectTo.startsWith("/")` guard before use.
+
+6. **`useActionState` from `react`** — React 19's `useActionState` is imported from
+   the `react` package (not `react-dom`). This was important to get right for strict TypeScript.
+
+**Files created (M2):**
+
+- `src/proxy.ts`
+- `src/app/auth/callback/route.ts`
+- `src/app/actions/auth.ts`
+- `src/components/auth/LoginForm.tsx`
+- `src/components/auth/RegisterForm.tsx`
+
+**Files modified (M2):**
+
+- `src/lib/validation/schemas.ts` — added loginSchema, magicLinkSchema, registerSchema, denominationValues, ageRangeValues
+- `src/lib/auth/require-user.ts` — real Supabase implementation, expanded AuthUser type
+- `src/lib/supabase/client.ts` — removed TODO comments
+- `src/lib/supabase/server.ts` — removed TODO comments
+- `src/app/login/page.tsx` — replaced placeholder
+- `src/app/register/page.tsx` — replaced placeholder
+- `src/app/account/page.tsx` — real protected page
+
+**Known issues introduced:** none
 **Known issues resolved:** All TypeScript errors and ESLint warnings

@@ -8,6 +8,8 @@
 ## Objective
 
 Create the complete Supabase database schema with Row Level Security on all tables.
+M3 also replaces the temporary `user_metadata` profile storage introduced in M2
+with a proper `profiles` table in Supabase PostgreSQL.
 
 ---
 
@@ -20,11 +22,39 @@ Create the complete Supabase database schema with Row Level Security on all tabl
 
 ---
 
+## Anonymous Session Strategy
+
+Assessment data created by unauthenticated users is stored with `user_id = null`
+until the user creates an account. On registration, an account-linking step
+migrates anonymous assessment data to the new authenticated user_id.
+This is a M3 + M4 concern and does not affect M2 auth implementation.
+
+## Profiles Table (Replaces M2 user_metadata)
+
+In M2, `nickname`, `denomination`, and `age_range` are stored in Supabase
+`user_metadata` as a temporary measure. In M3, these move to the `profiles` table.
+
+**Planned `profiles` schema:**
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid (PK) | Auto-generated |
+| `user_id` | uuid (FK → auth.users) | Unique, not null |
+| `email` | text | Mirrors auth.users.email |
+| `nickname` | text | Optional display name |
+| `spiritual_path` | text | Current assessment path |
+| `denomination` | text | From denominationValues enum |
+| `assessment_done` | boolean | Has completed at least one assessment |
+| `ai_life_spiritual_coaching_done` | boolean | Has used AI coaching |
+| `human_life_spiritual_coaching_done` | boolean | Has booked human coaching |
+| `created_at` | timestamptz | Set on insert |
+| `updated_at` | timestamptz | Auto-updated via trigger |
+
 ## Tables
 
 | Table | Description |
 |---|---|
-| `profiles` | User profile — display name, denomination, avatar |
+| `profiles` | User profile — nickname, denomination, spiritual path, activity flags |
 | `assessments` | Assessment sessions with status tracking |
 | `assessment_responses` | Individual answers per question |
 | `ai_reports` | Generated AI reports (exec summary + full report) |
