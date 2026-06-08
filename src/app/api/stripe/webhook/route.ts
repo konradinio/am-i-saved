@@ -2,11 +2,8 @@
 // TODO (Milestone 7): Implement real webhook signature verification and event handling.
 import { NextResponse } from "next/server";
 
-// Stripe webhooks must not use body parsing — raw body required for signature verification.
-export const config = { api: { bodyParser: false } };
-
 export async function POST() {
-  // TODO (Milestone 7): Read raw body (req.text())
+  // TODO (Milestone 7): Read raw body via req.text() — App Router does not use bodyParser config
   // TODO (Milestone 7): Verify stripe-signature header with STRIPE_WEBHOOK_SECRET
   // TODO (Milestone 7): Handle checkout.session.completed event
   // TODO (Milestone 7): Update payments table in Supabase (use service role client)
