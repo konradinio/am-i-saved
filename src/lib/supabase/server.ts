@@ -1,6 +1,3 @@
-// Supabase server client — safe for use in Server Components, API Routes, and Server Actions only.
-// NEVER import this in a Client Component. The service role key must stay server-side.
-// TODO (Milestone 2): Implement session handling and cookie management.
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
@@ -30,7 +27,6 @@ export async function createClient() {
 }
 
 // Service role client — bypasses RLS. Server-side only.
-// TODO (Milestone 3): Use for admin operations and webhook handlers.
 export async function createServiceClient() {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -1,12 +1,42 @@
-// Zod validation schemas — shared between API routes and Server Actions.
-// TODO (Milestone 2): Add auth schemas (login, register).
-// TODO (Milestone 4): Add questionnaire/assessment schemas.
-// TODO (Milestone 7): Add payment schemas.
 import { z } from "zod";
 
 // ─── Auth ────────────────────────────────────────────────────
 
-// TODO (Milestone 2): loginSchema, registerSchema, otpSchema
+export const denominationValues = [
+  "catholic",
+  "protestant",
+  "orthodox",
+  "non_denominational",
+  "non_christian",
+  "unsure",
+] as const;
+
+export const ageRangeValues = [
+  "under_18",
+  "18_24",
+  "25_34",
+  "35_44",
+  "45_54",
+  "55_64",
+  "65_plus",
+] as const;
+
+export const loginSchema = z.object({
+  email: z.string().email("Must be a valid email address."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
+});
+
+export const magicLinkSchema = z.object({
+  email: z.string().email("Must be a valid email address."),
+});
+
+export const registerSchema = z.object({
+  email: z.string().email("Must be a valid email address."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
+  nickname: z.string().max(50, "Nickname must be 50 characters or fewer.").optional(),
+  denomination: z.enum(denominationValues).optional(),
+  ageRange: z.enum(ageRangeValues).optional(),
+});
 
 // ─── Assessment ──────────────────────────────────────────────
 
