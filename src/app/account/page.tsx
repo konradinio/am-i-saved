@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { requireUser } from "@/lib/auth/require-user";
 import { signOut } from "@/app/actions/auth";
 
@@ -17,6 +18,20 @@ export default async function AccountPage() {
     <div className="container mx-auto px-4 py-20 max-w-2xl">
       <h1 className="text-3xl font-bold text-ivory mb-8">My Account</h1>
 
+      {/* Anonymous session banner */}
+      {user.isAnonymous && (
+        <div className="border border-gold/30 rounded-2xl p-5 bg-gold/5 mb-6">
+          <p className="text-sm text-ivory/80 leading-relaxed">
+            You&apos;re using a temporary session. Your data is saved, but it
+            will be lost if you clear your browser.{" "}
+            <Link href="/register" className="text-gold underline underline-offset-2">
+              Create a permanent account
+            </Link>{" "}
+            to keep your progress.
+          </p>
+        </div>
+      )}
+
       {/* Profile */}
       <div className="border border-white/10 rounded-2xl p-8 bg-white/5 mb-6">
         <h2 className="text-lg font-semibold text-ivory mb-6">Profile</h2>
@@ -29,10 +44,12 @@ export default async function AccountPage() {
               )}
             </dd>
           </div>
-          <div>
-            <dt className="text-sm text-ivory/50">Email</dt>
-            <dd className="text-ivory mt-0.5">{user.email}</dd>
-          </div>
+          {!user.isAnonymous && (
+            <div>
+              <dt className="text-sm text-ivory/50">Email</dt>
+              <dd className="text-ivory mt-0.5">{user.email}</dd>
+            </div>
+          )}
           <div>
             <dt className="text-sm text-ivory/50">Tradition / Denomination</dt>
             <dd className="text-ivory mt-0.5">

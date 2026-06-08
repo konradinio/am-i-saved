@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Denomination } from "@/types";
+import type { Denomination, AgeRange } from "@/types";
 
 export type AuthUser = {
   id: string;
   email: string;
   nickname: string | null;
   denomination: Denomination | null;
-  ageRange: string | null;
+  ageRange: AgeRange | null;
+  isAnonymous: boolean;
   createdAt: string;
 };
 
@@ -20,7 +21,7 @@ export async function requireUser(): Promise<AuthUser> {
     error,
   } = await supabase.auth.getUser();
   if (error || !user) redirect("/login");
-  return mapUser(user);
+  return buildAuthUser(supabase, user);
 }
 
 // Soft check — returns null instead of redirecting. Use for conditional UI.
@@ -30,17 +31,37 @@ export async function getOptionalUser(): Promise<AuthUser | null> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
-  return mapUser(user);
+  return buildAuthUser(supabase, user);
 }
 
-function mapUser(user: { id: string; email?: string; user_metadata?: Record<string, unknown>; created_at: string }): AuthUser {
+async function buildAuthUser(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  user: { id: string; email?: string; user_metadata?: Record<string, unknown>; created_at: string; is_anonymous?: boolean }
+): Promise<AuthUser> {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("nickname, denomination, age_range")
+    .eq("user_id", user.id)
+    .single();
+
   const meta = user.user_metadata ?? {};
+
+  // Profile is the source of truth; fall back to user_metadata for users
+  // who registered before M3 and whose profile hasn't been backfilled yet.
   return {
     id: user.id,
     email: user.email ?? "",
-    nickname: (meta.nickname as string | undefined) ?? null,
-    denomination: (meta.denomination as Denomination | undefined) ?? null,
-    ageRange: (meta.age_range as string | undefined) ?? null,
+    nickname:
+      profile?.nickname ??
+      (meta.nickname as string | undefined) ??
+      null,
+    denomination:
+      ((profile?.denomination ?? meta.denomination) as Denomination | null) ??
+      null,
+    ageRange:
+      ((profile?.age_range ?? meta.age_range) as AgeRange | null) ??
+      null,
+    isAnonymous: user.is_anonymous ?? false,
     createdAt: user.created_at,
   };
 }

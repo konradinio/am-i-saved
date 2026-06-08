@@ -1,20 +1,18 @@
 // ============================================================
-// Am I Saved? — Core TypeScript Types
-// Placeholder definitions for all major domain entities.
-// Full schemas will be implemented in Milestone 3 (Database).
+// Am I Saved? — Core TypeScript Types (M3)
+// All types are aligned with the M3 database schema.
 // ============================================================
 
 // ─── User & Auth ────────────────────────────────────────────
 
-export type UserProfile = {
-  id: string;
-  email: string;
-  displayName: string | null;
-  avatarUrl: string | null;
-  denomination: Denomination | null;
-  createdAt: string;
-  updatedAt: string;
-};
+export type AgeRange =
+  | "under_18"
+  | "18_24"
+  | "25_34"
+  | "35_44"
+  | "45_54"
+  | "55_64"
+  | "65_plus";
 
 export type Denomination =
   | "catholic"
@@ -23,6 +21,19 @@ export type Denomination =
   | "non_denominational"
   | "non_christian"
   | "unsure";
+
+// Mirrors the profiles table row (camelCase for TypeScript).
+export type UserProfile = {
+  userId: string;
+  nickname: string | null;
+  denomination: Denomination | null;
+  ageRange: AgeRange | null;
+  assessmentDone: boolean;
+  aiLifeSpiritualCoachingDone: boolean;
+  humanLifeSpiritualCoachingDone: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
 
 // ─── Assessment ─────────────────────────────────────────────
 
@@ -36,9 +47,9 @@ export type AssessmentStatus =
 export type Assessment = {
   id: string;
   userId: string;
-  denomination: Denomination | null;
+  denominationPath: Denomination | null;
   status: AssessmentStatus;
-  currentStepId: string | null;
+  executiveSummaryViewedAt: string | null;
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -53,6 +64,7 @@ export type QuestionType =
 export type AssessmentResponse = {
   id: string;
   assessmentId: string;
+  userId: string;
   questionId: string;
   questionType: QuestionType;
   answer: string | string[] | number;
@@ -68,7 +80,6 @@ export type AIReport = {
   assessmentId: string;
   userId: string;
   reportType: ReportType;
-  // Content is stored as structured JSON from OpenAI
   content: ExecutiveSummaryContent | FullReportContent | null;
   promptVersion: string;
   generatedAt: string | null;
@@ -103,6 +114,25 @@ export type CategoryReport = {
   reflections: string[];
 };
 
+// ─── Action Plans ────────────────────────────────────────────
+
+export type ActionPlanStatus = "pending" | "in_progress" | "completed" | "cancelled";
+
+export type AssessmentActionPlan = {
+  id: string;
+  reportId: string;
+  userId: string;
+  title: string;
+  description: string | null;
+  measure: string | null;
+  dueDate: string | null;
+  status: ActionPlanStatus;
+  sortOrder: number;
+  reminderAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 // ─── Payments ───────────────────────────────────────────────
 
 export type PaymentStatus = "pending" | "succeeded" | "failed" | "refunded";
@@ -122,7 +152,7 @@ export type Payment = {
   amountCents: number;
   currency: string;
   status: PaymentStatus;
-  metadata: Record<string, string>;
+  metadata: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 };
@@ -148,41 +178,48 @@ export type GiftCode = {
 
 export type ConsciencePathType = "adult_catholic" | "youth_catholic" | "general_christian";
 
-export type ConscienceSessionStatus = "in_progress" | "completed";
+export type SessionStatus = "in_progress" | "completed";
 
 export type ConscienceSession = {
   id: string;
   userId: string;
   pathType: ConsciencePathType;
-  status: ConscienceSessionStatus;
+  status: SessionStatus;
   reflectionSummary: string | null;
-  prayerSuggestions: string[];
-  confessionNotes: string | null;
   completedAt: string | null;
-  createdAt: string;
-};
-
-// ─── Coaching ───────────────────────────────────────────────
-
-export type CoachingBookingStatus =
-  | "pending"
-  | "confirmed"
-  | "completed"
-  | "cancelled";
-
-export type CoachingBooking = {
-  id: string;
-  userId: string;
-  coachId: string;
-  sponsorshipId: string | null;
-  giftCodeId: string | null;
-  status: CoachingBookingStatus;
-  scheduledAt: string | null;
-  meetingUrl: string | null;
-  notes: string | null;
   createdAt: string;
   updatedAt: string;
 };
+
+export type ConscienceResponse = {
+  id: string;
+  sessionId: string;
+  userId: string;
+  itemId: string;
+  response: string | string[] | number | boolean;
+  createdAt: string;
+};
+
+export type ConscienceActionPlan = {
+  id: string;
+  sessionId: string;
+  userId: string;
+  title: string;
+  description: string | null;
+  measure: string | null;
+  dueDate: string | null;
+  status: ActionPlanStatus;
+  sortOrder: number;
+  reminderAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// ─── Coaching ───────────────────────────────────────────────
+// Human coaching tables (life_spiritual_coaches, human_coaching_sessions,
+// human_coaching_action_plans) are deferred to M13.
+// AI coaching tables (ai_coaching_sessions, ai_coaching_action_plans)
+// are deferred to M5 when the coaching interaction design is defined.
 
 export type CoachingSponsorship = {
   id: string;

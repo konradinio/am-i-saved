@@ -58,17 +58,59 @@ export async function signUp(
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
 
+  const metadata = {
+    nickname: parsed.data.nickname ?? null,
+    denomination: parsed.data.denomination ?? null,
+    age_range: parsed.data.ageRange ?? null,
+  };
+
   const supabase = await createClient();
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser();
+
+  if (currentUser?.is_anonymous) {
+    // Convert anonymous session to permanent account.
+    // user_id stays the same — no data migration needed.
+    const { error } = await supabase.auth.updateUser({
+      email: parsed.data.email,
+      password: parsed.data.password,
+      data: metadata,
+    });
+    if (error) return { error: error.message };
+
+    // Sync profile table with registration data.
+    await supabase
+      .from("profiles")
+      .update({
+        nickname: metadata.nickname,
+        denomination: metadata.denomination as
+          | "catholic"
+          | "protestant"
+          | "orthodox"
+          | "non_denominational"
+          | "non_christian"
+          | "unsure"
+          | null,
+        age_range: metadata.age_range as
+          | "under_18"
+          | "18_24"
+          | "25_34"
+          | "35_44"
+          | "45_54"
+          | "55_64"
+          | "65_plus"
+          | null,
+      })
+      .eq("user_id", currentUser.id);
+
+    redirect("/account");
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: {
-      data: {
-        nickname: parsed.data.nickname ?? null,
-        denomination: parsed.data.denomination ?? null,
-        age_range: parsed.data.ageRange ?? null,
-      },
-    },
+    options: { data: metadata },
   });
 
   if (error) {
@@ -84,6 +126,22 @@ export async function signUp(
     success:
       "Account created! Check your email to confirm your address, then sign in.",
   };
+}
+
+// Creates an anonymous Supabase session.
+// Called before the assessment flow begins (M4).
+// No-op if the user already has a session.
+export async function startAnonymousSession(): Promise<AuthActionState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) return {};
+
+  const { error } = await supabase.auth.signInAnonymously();
+  if (error) return { error: error.message };
+  return {};
 }
 
 export async function signInWithMagicLink(
