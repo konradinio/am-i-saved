@@ -5,6 +5,52 @@ A running record of meaningful project history, decisions, and milestones.
 
 ---
 
+## 2026-06-08 — Milestone 3: Database Schema, RLS & Anonymous Strategy Complete
+
+**Milestone:** 3 — Database
+**Status:** Complete
+
+### Summary of Changes
+
+Created the complete Supabase PostgreSQL schema: 13 tables, 11 ENUM types, Row Level Security on all tables, and a `profiles` auto-create trigger. Implemented Supabase anonymous sign-ins as the anonymous-first strategy. Updated TypeScript types, Supabase client generics, `requireUser()`, `signUp` conversion logic, and the account page.
+
+### Architecture Decisions
+
+1. **Supabase anonymous sign-ins** — `supabase.auth.signInAnonymously()` creates a real auth.users entry with `is_anonymous = true`. `user_id` is never NULL. RLS and Supabase query builder work identically for anonymous and permanent users. Zero data migration on account conversion: same `user_id` is kept, `updateUser()` called on anonymous session.
+
+2. **`ai_coaching_sessions` deferred to M5** — Schema depends on AI coaching interaction design (chat? structured questions?). Creating tables before the design exists risks a mid-data migration in M5.
+
+3. **Human coaching tables deferred to M13** — Privacy-first redesign required. No PII beyond display_name and email.
+
+4. **Supabase `Database` type hand-written** — `src/types/database.ts` provides type-safe query builder access. Required `Relationships: []` on every table and `Views`/`Functions`/`CompositeTypes` in the schema to satisfy the `@supabase/postgrest-js` `GenericTable` / `GenericSchema` constraints.
+
+5. **`SECURITY DEFINER` on profile trigger** — The `handle_new_user()` function runs with owner privileges so it can insert into `public.profiles` from a trigger on `auth.users` (different schema).
+
+### Security Decisions
+
+- Service-role-only writes enforced at the RLS policy level for `ai_reports`, `report_files`, `payments`, `gift_codes`, `coaching_sponsorships`
+- Storage RLS policy gates download access to path-scoped PDFs: `(storage.foldername(name))[1] = auth.uid()::text`
+- No client INSERT policy on `profiles` — trigger only. Prevents users from creating profiles for other users.
+- `ON DELETE RESTRICT` on payments → users with payments cannot be deleted (data retention)
+
+### Product Decisions
+
+1. **Anonymous user cleanup deferred** — Document the need, implement later. The risk is bounded: anonymous users without payment won't accumulate payment records, and the cleanup cron will be straightforward to add.
+2. **`age_range` only, no exact age or DOB** — Privacy principle: collect the minimum required for denomination-path personalization.
+
+### Known Limitations
+
+- Migrations not yet applied to Supabase (manual step required)
+- Storage bucket `reports` must be created manually in Supabase Dashboard
+- `SUPABASE_SERVICE_ROLE_KEY` not yet set in `.env.local`
+- Rate limiting still not implemented (deferred from M2)
+
+### Next Steps
+
+M4 — Questionnaire Engine: question JSON definitions, assessment start flow (calls `startAnonymousSession()`), step pages with `assessment_responses` inserts, profile completion.
+
+---
+
 ## 2026-06-08 — Milestone 2: Authentication Foundation Complete
 
 **Milestone:** 2 — Authentication

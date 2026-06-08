@@ -1,10 +1,10 @@
 # Architecture Master Document
 ## Am I Saved? — Christian Spiritual Reflection Platform
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Created:** 2026-06-06
 **Last updated:** 2026-06-08
-**Milestone:** 2 — Authentication
+**Milestone:** 3 — Database
 
 ---
 
@@ -148,11 +148,19 @@ Do NOT create `src/middleware.ts` — it will silently do nothing in v16.
 6. Client-side auth state is never trusted
 7. Anonymous users can access all assessment routes (auth presented at full report paywall — M7)
 
-### Anonymous-First Flow
+### Anonymous-First Flow (M3+)
 
-Assessment routes (`/assessment/*`) are intentionally public. Users can complete
-assessments without an account. Authentication is offered at the upgrade prompt
-(full report paywall). This reduces friction and maximizes assessment completion rate.
+Assessment routes (`/assessment/*`) are intentionally public. When a user starts an
+assessment, `startAnonymousSession()` creates a real Supabase `auth.users` entry with
+`is_anonymous = true`. All data is saved with this `user_id`. RLS works identically
+for anonymous and permanent users — no NULL user_id, no service-role bypass needed.
+
+**Account conversion:** Call `supabase.auth.updateUser({ email, password })` on the
+anonymous session. The `user_id` stays the same — zero data migration.
+
+**Anonymous cleanup:** Unconverted anonymous users are not deleted automatically.
+A cron cleanup job (delete `is_anonymous = true` users older than 30 days with no
+payment) is deferred to a later milestone.
 
 ### Payment Security (M7+)
 1. Checkout session created server-side with Stripe secret key

@@ -920,3 +920,68 @@ prior context.
 
 **Known issues introduced:** none
 **Known issues resolved:** All TypeScript errors and ESLint warnings
+
+### Milestone 3 — Database Schema, RLS & Anonymous Strategy (2026-06-08) ✅
+
+**Status:** Complete
+**TypeScript:** Zero errors
+**ESLint:** Zero warnings
+**Build:** Pass (34 routes, pre-existing config warning in Stripe placeholder unchanged)
+
+**Key decisions:**
+
+1. **Supabase anonymous sign-ins (Option 4)** — Anonymous users get a real `auth.users`
+   entry with `is_anonymous = true`. `user_id` is always non-null. RLS works identically
+   for anonymous and permanent users. Zero data migration on account conversion. Alternative
+   considered: nullable `user_id` in assessment tables — rejected because it requires
+   service-role bypass for all anonymous data access and creates a complex migration later.
+
+2. **`ai_coaching_sessions` and `ai_coaching_action_plans` deferred to M5** — Their schema
+   depends on the AI coaching interaction design (chat vs. structured questionnaire) which
+   isn't defined until M5. Creating them now risks a schema change mid-product with
+   data already present.
+
+3. **`life_spiritual_coaches` and human coaching tables deferred to M13** — Privacy-first
+   redesign needed. Future schema uses `display_name` only; no address, sex, or phone.
+   Privacy review required before adding any PII fields.
+
+4. **`Relationships: []` required in Database type** — The `@supabase/postgrest-js` package's
+   `GenericTable` type requires a `Relationships` field. Missing this field causes all
+   `.from()` query results to be typed as `never`. Discovered during M3 TypeScript validation.
+   Auto-generated Supabase types always include this field; hand-written Database types must too.
+
+5. **`Views`, `Functions`, `CompositeTypes` required in Database type** — The `GenericSchema`
+   constraint in `@supabase/postgrest-js` requires `Views` and `Functions`. Added as
+   `{ [_ in never]: never }` empty types.
+
+6. **Backfill in profiles migration** — Migration 002 includes an idempotent INSERT to create
+   profile rows for any `auth.users` that existed before M3 (i.e., M2 test accounts).
+   This prevents NULL-profile edge cases in `require-user.ts`.
+
+7. **Profile trigger `SECURITY DEFINER`** — The `handle_new_user()` trigger function is
+   declared `SECURITY DEFINER` so it runs with owner privileges when inserting into
+   `public.profiles` from the `auth.users` INSERT event.
+
+**Files created (M3):**
+
+- `supabase/migrations/20260608000001_extensions_and_enums.sql`
+- `supabase/migrations/20260608000002_profiles.sql`
+- `supabase/migrations/20260608000003_assessments.sql`
+- `supabase/migrations/20260608000004_reports.sql`
+- `supabase/migrations/20260608000005_action_plans.sql`
+- `supabase/migrations/20260608000006_payments.sql`
+- `supabase/migrations/20260608000007_conscience.sql`
+- `supabase/migrations/20260608000008_storage.sql`
+- `src/types/database.ts` — Supabase Database generic type (13 tables, 11 ENUMs)
+
+**Files modified (M3):**
+
+- `src/types/index.ts` — added AgeRange, ActionPlanStatus, AssessmentActionPlan, ConscienceResponse, ConscienceActionPlan; updated UserProfile, Assessment, AssessmentResponse, ConscienceSession; removed CoachingBooking/CoachingBookingStatus
+- `src/lib/supabase/client.ts` — added `<Database>` generic
+- `src/lib/supabase/server.ts` — added `<Database>` generic to both clients
+- `src/lib/auth/require-user.ts` — reads from profiles table; added isAnonymous; changed ageRange type to AgeRange
+- `src/app/actions/auth.ts` — signUp detects is_anonymous for conversion; added startAnonymousSession()
+- `src/app/account/page.tsx` — anonymous session banner; hides email for anonymous users
+
+**Known issues introduced:** none
+**Known issues resolved:** `profiles` table not yet created (M2 open issue)

@@ -74,21 +74,40 @@ This project uses only `src/proxy.ts`. Do not create `src/middleware.ts`.
 
 ---
 
-## Future RLS Requirement
+## Row Level Security (Milestone 3 — Complete)
 
-Row Level Security (RLS) on all Supabase tables is mandatory before any real user data is stored. This will be implemented in Milestone 3.
+Row Level Security is ENABLED on all 13 tables created in M3. No table has a public read policy.
 
-**Required RLS rules (Milestone 3):**
-- `profiles`: User can only read/write their own profile
-- `assessments`: User can only read/write their own assessments
-- `assessment_responses`: User can only read/write their own responses
-- `ai_reports`: User can only read their own reports
-- `payments`: User can only read their own payments
-- `report_files`: User can only read files they own
-- `gift_codes`: Purchaser sees codes they bought; recipient sees codes redeemed by them
-- `conscience_sessions`: User can only read/write their own sessions
-- `coaching_bookings`: User sees their own bookings; coach sees bookings assigned to them
-- `coaching_sponsorships`: Sponsor sees their sponsorships; recipient sees theirs
+**RLS pattern:** `auth.uid() = user_id` covers both anonymous (is_anonymous = true) and permanent users.
+
+**User-owned tables (full CRUD):**
+- `assessments`: SELECT/INSERT/UPDATE by owner
+- `assessment_action_plans`: ALL by owner
+- `conscience_sessions`: SELECT/INSERT/UPDATE by owner
+- `conscience_action_plans`: ALL by owner
+- `chart_snapshots`: SELECT/INSERT/UPDATE by owner
+
+**Immutable user tables (no UPDATE/DELETE policy):**
+- `assessment_responses`: SELECT/INSERT only — responses cannot be modified
+- `conscience_responses`: SELECT/INSERT only — responses cannot be modified
+
+**Service-role-only writes (clients cannot INSERT or UPDATE):**
+- `ai_reports`: SELECT by owner; INSERT/UPDATE by service role (AI generation)
+- `report_files`: SELECT by owner; INSERT by service role (PDF generation)
+- `payments`: SELECT by owner; INSERT/UPDATE by service role (Stripe webhook)
+- `gift_codes`: SELECT by purchaser OR redeemed_by; writes by service role
+- `coaching_sponsorships`: SELECT by sponsor OR recipient; writes by service role
+
+**Trigger-only INSERT (no client INSERT policy):**
+- `profiles`: Created automatically by `handle_new_user()` trigger (SECURITY DEFINER)
+
+**Storage RLS:**
+- Bucket `reports` (private): Users can SELECT files where the first path component equals their UUID
+- Service role bypasses RLS entirely for PDF uploads
+
+**ON DELETE behavior:**
+- CASCADE: profiles, assessments, assessment_responses, ai_reports, chart_snapshots, assessment_action_plans, conscience_sessions, conscience_responses, conscience_action_plans
+- RESTRICT: payments, report_files, gift_codes, coaching_sponsorships (prevent data loss on user delete)
 
 ---
 
