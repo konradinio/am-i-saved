@@ -1,7 +1,7 @@
 # Claude Session Handoff
 ## Am I Saved?
 
-**Last updated:** 2026-06-13
+**Last updated:** 2026-06-14
 **Purpose:** Operational handoff for future Claude sessions. NOT historical.
 For full history see `docs/DEVELOPMENT_HISTORY.md`.
 
@@ -37,8 +37,8 @@ and confirmed the current milestone, current status, and open issues.
 | **Technical name** | `am-i-saved` |
 | **GitHub remote** | `https://github.com/konradinio/am-i-saved.git` |
 | **Current branch** | `main` |
-| **Current milestone** | **M3 — Complete. M4 — Not started.** |
-| **Current status** | M3 complete. Awaiting instruction to begin M4. |
+| **Current milestone** | **M3 — Complete. Visual identity — Complete. M4 — Not started.** |
+| **Current status** | Homepage redesign and visual identity complete. Ready to begin M4. |
 | **TypeScript** | Zero errors |
 | **ESLint** | Zero warnings |
 
@@ -81,8 +81,8 @@ This is a hard architectural constraint, not a style preference.
 
 | System | Status | Notes |
 |---|---|---|
-| **Git** | ✅ Initialized | 8 commits on `main` (after M3) |
-| **GitHub** | ✅ Pushed | Main branch pushed after M3 completion |
+| **Git** | ✅ Initialized | 10 commits on `main` (after visual identity) |
+| **GitHub** | ⚠️ Not yet pushed | Push after visual identity commits |
 | **Supabase** | ✅ Credentials set | `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
 | **Supabase DB** | ⚠️ Migrations not yet applied | 8 migration files exist; apply via Dashboard SQL Editor |
 | **Storage bucket** | ⚠️ Not yet created | Create private bucket `reports` in Supabase Dashboard |
@@ -130,13 +130,37 @@ This is a hard architectural constraint, not a style preference.
 - `auth.ts` — anonymous → permanent account conversion in `signUp`, new `startAnonymousSession()`
 - Account page — anonymous session banner, email hidden for anonymous users
 
+### Visual Identity / Homepage Redesign ✅ (2026-06-14)
+
+**Design concept:** Waterline metaphor — sky (warm gold) / animated wave / ocean (deep teal).
+Inspired by Matthew 14:22-33. Central motif: two hands reaching toward each other across the
+waterline (Matthew 14:28). Cormorant Garamond italic for display headings.
+
+**New components:**
+- `src/components/ui/WaveDivider.tsx` — CSS-only animated dual-layer SVG wave
+- `src/components/ui/HandsMotif.tsx` — abstract SVG two-hands illustration
+- `src/components/ui/ScrollReveal.tsx` — IntersectionObserver scroll reveal (client component)
+
+**New design tokens (in `globals.css` @theme):**
+- `--color-teal: #1a6b7a` — Ocean Teal
+- `--color-teal-light: #2e8b9e` — Surface Teal
+- `--color-wave-foam: #a8d8e4` — Wave Foam
+- `--color-abyss: #071523` — Abyss (deepest background)
+- `--color-gold-sunrise: #e8a535` — Sunrise Gold
+- `--color-amber: #b86e22` — Horizon Amber
+- `--color-ray: #dff0f5` — Ray White
+- `--font-display: var(--font-cormorant)` — Cormorant Garamond
+
+**Pages rewritten:** homepage, how-it-works, assessment start, step, summary, full-report
+**Pages updated:** Footer (abyss bg), pricing ($TBD → $2.99)
+
 ---
 
 ## 5. In Progress
 
 **Nothing is currently in progress.**
 
-M3 is complete. Product funnel documentation has been revised (2026-06-13 product pivot — see PROJECT_LOG.md). The project is ready to begin M4.
+Visual identity is complete. Project is ready to begin M4.
 
 ---
 
@@ -250,8 +274,8 @@ M3 is complete. Product funnel documentation has been revised (2026-06-13 produc
 
 1. Apply M3 migrations to Supabase (Dashboard SQL Editor, 8 files in order)
 2. Create `reports` storage bucket (private) in Supabase Dashboard
-3. Enable Anonymous sign-ins in Supabase Dashboard
-4. Test full auth flow locally: `npm run dev` → register → account page → sign out
+3. Enable Anonymous sign-ins in Supabase Dashboard → Authentication → Providers → Anonymous
+4. Test locally: `npm run dev` → visit homepage → view assessment start → verify visual identity
 5. Then begin M4 — Questionnaire Engine
 
 ---
@@ -259,8 +283,15 @@ M3 is complete. Product funnel documentation has been revised (2026-06-13 produc
 ## 12. Handoff Summary
 
 Am I Saved? is a Christian spiritual reflection platform. Milestones 1–3 are complete.
-The database schema is defined as 8 SQL migration files (not yet applied to Supabase).
-Supabase clients are fully typed with the `Database` generic.
+The visual identity has been implemented (2026-06-14) with the waterline metaphor: sky/wave/ocean
+theme, Cormorant Garamond display font, and animated SVG components. The homepage has been
+fully rewritten. The How It Works, assessment start, step, summary, and full report pages are
+all visually styled and ready for M4 feature implementation.
+
+**Design identity:** Waterline metaphor (Matthew 14:22-33). Warm gold sky → animated wave →
+deep teal ocean. Two hands reaching across the waterline (Matthew 14:28) as central motif.
+Cormorant Garamond Light Italic for display headings. Abyss (#071523) background on
+footer and deep sections.
 
 **Product funnel (revised 2026-06-13):** Anonymous-first. No login required to start or
 complete the assessment. Email is collected only at the point of payment (M7). The Stripe
@@ -268,6 +299,8 @@ webhook converts the anonymous account to an email-linked account with no passwo
 Magic link is the only future sign-in method for primary-funnel users. Full report is
 displayed on-screen immediately after payment (with loading state, ~15–30 seconds). PDF
 and a combined magic-link email follow asynchronously.
+
+**Pricing:** Full Report = $2.99.
 
 The spiritual safety constraint — the platform must never declare a person saved or unsaved
 — is enforced in code and must never be removed.

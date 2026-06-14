@@ -5,6 +5,97 @@ A running record of meaningful project history, decisions, and milestones.
 
 ---
 
+## 2026-06-14 — Visual Identity / Homepage Redesign (Pre-M4 Implementation)
+
+**Type:** Design and UX implementation (not a milestone — no questionnaire logic changed)
+**Status:** Complete
+
+### Summary
+
+Full homepage redesign and visual identity implementation. Establishes the waterline
+metaphor — a sky/wave/ocean visual language inspired by Matthew 14:22-33 — as the
+spine of the product's brand identity. Implemented before M4 so the questionnaire flows
+into an already-branded UI.
+
+### Design Decisions
+
+1. **Waterline metaphor** — Upper portion is warm golden sky (horizon amber, sunrise gold).
+   A CSS-animated wave SVG divides sky from ocean. Below the wave, deep teal ocean colors
+   and a HandsMotif SVG (two hands almost touching across the waterline, Matthew 14:28).
+   The metaphor communicates reaching toward salvation without declaring certainty.
+
+2. **Cormorant Garamond for display type** — Loaded via `next/font/google` with weights
+   300–700, normal + italic. Assigned to `--font-display` CSS variable. Used for hero
+   title, page titles, and CTA headings in a thin italic style. Geist Sans remains the
+   body/heading font (no change to `--font-heading`).
+
+3. **CSS-only animations** — All animations use `@keyframes` in `globals.css`. No
+   JavaScript animation libraries. Four keyframes: `wave-move` (wave translation),
+   `ray-pulse` (underwater light), `float-gentle` (hands motif), `fade-up` (hero text).
+   All GPU-composited (transform + opacity only). `prefers-reduced-motion` media query
+   disables all animations.
+
+4. **SVG components with no JS** — `WaveDivider` and `HandsMotif` are pure Server
+   Components. No `"use client"` directive. The `ScrollReveal` component is the only
+   client component, using a standard `IntersectionObserver` pattern.
+
+5. **Scroll reveal pattern** — `ScrollReveal` client component wraps content sections.
+   Adds `visible` class when element enters viewport. CSS handles the opacity/transform
+   transition. One-shot: observer disconnects after element becomes visible.
+
+6. **HandsMotif SVG geometry** — Upper hand: gold gradient, arm from top, fingers reach
+   down to y≈150. Lower hand: teal gradient, fingers reach up from y≈160. 10px gap between
+   middle fingertips represents the tension of reaching. Water ripple ellipses at the
+   waterline. Light ray polygons below for underwater light effect.
+
+7. **Abstract hands only** — No photograph used. The SVG is deliberately abstract (pill/
+   rounded-rect shapes for fingers) to avoid copyright issues and to maintain a "design
+   system" aesthetic that scales across different screen sizes.
+
+8. **Abyss color (#071523) for footer** — Footer background changed from navy to abyss
+   to visually anchor the "ocean depth" metaphor at the bottom of every page.
+
+### Product Decisions
+
+1. **Pricing confirmed at $2.99** — Pricing page updated from `$TBD` to `$2.99`.
+2. **How It Works page** — Upgraded from placeholder to full 4-step content. This is now
+   a primary destination (secondary hero CTA), not just a nav link.
+
+### Security Decisions
+
+No new security surface created. All new components are stateless UI. No data access.
+
+### Files Created
+
+- `src/components/ui/WaveDivider.tsx` — animated dual-layer SVG wave
+- `src/components/ui/HandsMotif.tsx` — abstract two-hands SVG illustration
+- `src/components/ui/ScrollReveal.tsx` — "use client" IntersectionObserver wrapper
+
+### Files Modified
+
+- `src/app/globals.css` — new color tokens in @theme, --font-display, @keyframes, .reveal CSS
+- `src/app/layout.tsx` — Cormorant Garamond font added
+- `src/app/page.tsx` — complete homepage rewrite (waterline hero, 4 sections)
+- `src/app/how-it-works/page.tsx` — real 4-step content
+- `src/app/assessment/start/page.tsx` — ocean-themed, denomination grid
+- `src/app/assessment/[assessmentId]/step/[stepId]/page.tsx` — ocean bg, glassmorphism card
+- `src/app/assessment/[assessmentId]/summary/page.tsx` — styled with upsell CTA section
+- `src/app/assessment/[assessmentId]/full-report/page.tsx` — dark abyss, report stubs
+- `src/app/pricing/page.tsx` — $TBD → $2.99
+- `src/components/layout/Footer.tsx` — abyss background
+
+### Validation Results
+
+- `npx tsc --noEmit` → zero errors
+- `npm run lint` → zero warnings
+- `npm run build` → pass (32 routes)
+
+### Next Steps
+
+Begin M4 — Questionnaire Engine.
+
+---
+
 ## 2026-06-13 — Product Pivot: Anonymous-First Full Funnel (Pre-M4 Decision)
 
 **Type:** Product decision (not a milestone — no code changed)

@@ -1,7 +1,7 @@
 # Active Milestone
 ## Am I Saved?
 
-**Last updated:** 2026-06-08
+**Last updated:** 2026-06-14
 
 ---
 
@@ -67,6 +67,44 @@ A new Claude session should read `CLAUDE_SESSION_HANDOFF.md` first.
 | GitHub remote not pushed | Medium | Run `git push -u origin main` |
 | Vercel project not linked | Medium | Required before first deployment |
 | No `.gitattributes` for CRLF | Low | Minor Windows dev issue |
+
+---
+
+## Pre-M4 Work Completed (2026-06-14)
+
+### Visual Identity / Homepage Redesign
+
+A full homepage redesign and visual identity implementation was completed before beginning M4.
+This was a product decision to establish brand identity before building the questionnaire flow.
+
+**Design concept:** Waterline metaphor — sky (warm gold) / wave divider / ocean (deep teal) —
+inspired by Matthew 14:22-33 (Peter walking on water). Two hands reaching across the waterline
+as the central visual motif.
+
+| Deliverable | Status |
+|---|---|
+| New color tokens: teal, teal-light, wave-foam, abyss, gold-sunrise, amber, ray | Done |
+| Cormorant Garamond display font added to layout | Done |
+| CSS-only animation keyframes: wave-move, ray-pulse, float-gentle, fade-up | Done |
+| Scroll reveal CSS (.reveal / .reveal.visible) + prefers-reduced-motion | Done |
+| WaveDivider component — animated dual-layer SVG waves | Done |
+| HandsMotif component — abstract SVG illustration (two hands, Matthew 14:28) | Done |
+| ScrollReveal component — IntersectionObserver client wrapper | Done |
+| Homepage rewrite — waterline hero, wave divider, ocean zone, 4 sections | Done |
+| How It Works page — real 4-step content | Done |
+| Assessment Start page — ocean-themed with denomination grid | Done |
+| Assessment Step page — ocean gradient, glassmorphism card, progress bar | Done |
+| Executive Summary page — styled with upsell CTA | Done |
+| Full Report page — dark abyss, loading state, report section stubs | Done |
+| Footer — updated to abyss background (#071523) | Done |
+| Pricing page — $TBD changed to $2.99 | Done |
+| TypeScript: zero errors | Done |
+| ESLint: zero warnings | Done |
+| Build: pass (32 routes) | Done |
+
+### Pricing Update
+
+`src/app/pricing/page.tsx` — Full Report price changed from `$TBD` to `$2.99`.
 
 ---
 

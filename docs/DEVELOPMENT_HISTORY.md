@@ -1020,3 +1020,77 @@ prior context.
 
 **Known issues introduced:** none
 **Known issues resolved:** `profiles` table not yet created (M2 open issue)
+
+---
+
+### Visual Identity / Homepage Redesign (Pre-M4, 2026-06-14)
+
+**TypeScript:** Zero errors
+**ESLint:** Zero warnings
+**Build:** Pass (32 routes)
+
+**Key decisions:**
+
+1. **Waterline metaphor** — The homepage, and by extension the product's visual identity,
+   is built around the image of a waterline: warm golden sky above, dark teal ocean below,
+   a CSS-animated wave at the boundary. Inspired by Matthew 14:22-33 (Peter walking on water).
+   This metaphor communicates spiritual uncertainty (reaching toward salvation) without
+   claiming certainty.
+
+2. **Cormorant Garamond for display type** — A thin, elegant serif with strong editorial and
+   spiritual associations. Loaded via `next/font/google` as `Cormorant_Garamond` with weights
+   300–700 and both normal/italic styles. Assigned to `--font-display` CSS variable in `@theme`.
+   Geist Sans remains `--font-heading` for body/UI text.
+
+3. **CSS-only animation strategy** — All animations use `@keyframes` in `globals.css` and are
+   applied via inline `animationName` style properties. Four keyframes: `wave-move` (infinite
+   translate for wave loop), `ray-pulse` (opacity for underwater light rays), `float-gentle`
+   (slow Y translation for hands motif), `fade-up` (entrance animation for hero elements).
+   All GPU-composited (transform + opacity only). `prefers-reduced-motion` media query
+   disables everything.
+
+4. **WaveDivider technique** — Two SVG layers, each 200% wide, containing two identical
+   1440px wave SVGs side by side. `wave-move` keyframe translates from `0` to `-50%`,
+   which is exactly the width of one SVG. This creates a seamless infinite loop. Layer 2
+   uses `animationDirection: "reverse"` at 8s (vs layer 1 at 12s) for natural depth.
+
+5. **HandsMotif SVG geometry** — Upper hand: gold gradient, arm top→down, fingers reach to
+   y≈150. Lower hand: teal gradient, fingers reach up from y≈160. 10px gap at y=155 is
+   the "almost touching" tension. Water ripple ellipses at y=154–158 reinforce the surface.
+   Three light-ray polygons below create underwater illumination effect. All shapes are
+   abstract pill/rounded-rect (no realistic anatomy attempted).
+
+6. **ScrollReveal pattern** — `ScrollReveal` is a thin "use client" wrapper around
+   `IntersectionObserver`. It adds `.visible` class to the `.reveal` div when the element
+   crosses a 10% threshold. CSS transitions in `globals.css` handle opacity and translateY.
+   Observer disconnects after first trigger (one-shot). Server Components (homepage) can
+   safely import and use this client component.
+
+7. **Abstract SVG motif (no photograph)** — The reference image (Peter/Jesus hands at the
+   waterline) is copyrighted. The HandsMotif uses simplified rounded rectangles to suggest
+   hands without tracing any real photograph. This is intentional and must remain abstract.
+
+8. **Pricing confirmed** — `src/app/pricing/page.tsx` updated from `$TBD` to `$2.99`.
+   This reflects the approved launch pricing decision.
+
+**Files created:**
+
+- `src/components/ui/WaveDivider.tsx`
+- `src/components/ui/HandsMotif.tsx`
+- `src/components/ui/ScrollReveal.tsx`
+
+**Files modified:**
+
+- `src/app/globals.css` — new @theme tokens (7 colors + --font-display), @keyframes (4), .reveal CSS, prefers-reduced-motion block
+- `src/app/layout.tsx` — Cormorant_Garamond imported, configured, added to html className
+- `src/app/page.tsx` — complete rewrite: waterline hero (sky/wave/ocean zones), What You'll Receive (4 items), Why Trust This Reflection (4 points), Spiritual Safety Disclaimer, Final CTA
+- `src/app/how-it-works/page.tsx` — real 4-step content with numbered badges and connector lines
+- `src/app/assessment/start/page.tsx` — ocean gradient bg, denomination grid, styled placeholder
+- `src/app/assessment/[assessmentId]/step/[stepId]/page.tsx` — ocean gradient, teal progress bar, glassmorphism question card
+- `src/app/assessment/[assessmentId]/summary/page.tsx` — styled header, chart/summary placeholders, gold-gradient upsell CTA
+- `src/app/assessment/[assessmentId]/full-report/page.tsx` — abyss bg, gold border header, loading state placeholder, section stubs, disabled PDF button
+- `src/app/pricing/page.tsx` — $TBD → $2.99
+- `src/components/layout/Footer.tsx` — bg-navy → abyss (#071523)
+
+**Known issues introduced:** none
+**Known issues resolved:** none (visual identity only — no functional changes)
