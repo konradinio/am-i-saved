@@ -1,7 +1,7 @@
 # Claude Session Handoff
 ## Am I Saved?
 
-**Last updated:** 2026-06-08
+**Last updated:** 2026-06-13
 **Purpose:** Operational handoff for future Claude sessions. NOT historical.
 For full history see `docs/DEVELOPMENT_HISTORY.md`.
 
@@ -82,7 +82,7 @@ This is a hard architectural constraint, not a style preference.
 | System | Status | Notes |
 |---|---|---|
 | **Git** | ✅ Initialized | 8 commits on `main` (after M3) |
-| **GitHub** | ⚠️ Remote set, not pushed | Remote exists; no push performed yet |
+| **GitHub** | ✅ Pushed | Main branch pushed after M3 completion |
 | **Supabase** | ✅ Credentials set | `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
 | **Supabase DB** | ⚠️ Migrations not yet applied | 8 migration files exist; apply via Dashboard SQL Editor |
 | **Storage bucket** | ⚠️ Not yet created | Create private bucket `reports` in Supabase Dashboard |
@@ -136,7 +136,7 @@ This is a hard architectural constraint, not a style preference.
 
 **Nothing is currently in progress.**
 
-M3 is complete. The project is held at M3 awaiting instruction to begin M4.
+M3 is complete. Product funnel documentation has been revised (2026-06-13 product pivot — see PROJECT_LOG.md). The project is ready to begin M4.
 
 ---
 
@@ -186,7 +186,11 @@ M3 is complete. The project is held at M3 awaiting instruction to begin M4.
 - `ai_coaching_sessions`, `ai_coaching_action_plans` → M5 (AI coaching design TBD)
 - `life_spiritual_coaches`, `human_coaching_sessions`, `human_coaching_action_plans` → M13
 
-**Anonymous identity strategy:** `supabase.auth.signInAnonymously()` → real `auth.users` entry with `is_anonymous = true`. Convert via `updateUser({ email, password })` — same `user_id`, zero data migration.
+**Anonymous identity strategy:** `supabase.auth.signInAnonymously()` → real `auth.users` entry with `is_anonymous = true`. Same `user_id` throughout, zero data migration.
+
+**Primary conversion (M7 webhook — email-only):** `supabase.auth.admin.updateUserById(userId, { email })` — no password set; magic link is the only future sign-in method. This is the primary funnel conversion path.
+
+**Secondary conversion (registration form):** `supabase.auth.updateUser({ email, password })` — full account with password. Available via `/register` as a secondary path.
 
 ---
 
@@ -256,12 +260,19 @@ M3 is complete. The project is held at M3 awaiting instruction to begin M4.
 
 Am I Saved? is a Christian spiritual reflection platform. Milestones 1–3 are complete.
 The database schema is defined as 8 SQL migration files (not yet applied to Supabase).
-Supabase clients are fully typed with the `Database` generic. The anonymous-first flow
-uses Supabase anonymous sign-ins (`is_anonymous = true`) with zero-migration conversion
-to permanent accounts via `updateUser`. The spiritual safety constraint — the platform
-must never declare a person saved or unsaved — is enforced in code and must never be removed.
+Supabase clients are fully typed with the `Database` generic.
 
-The project is in a clean, committed, lint-free, TypeScript-clean state. It has not been
-pushed to GitHub. Migrations have not been applied to Supabase.
+**Product funnel (revised 2026-06-13):** Anonymous-first. No login required to start or
+complete the assessment. Email is collected only at the point of payment (M7). The Stripe
+webhook converts the anonymous account to an email-linked account with no password set.
+Magic link is the only future sign-in method for primary-funnel users. Full report is
+displayed on-screen immediately after payment (with loading state, ~15–30 seconds). PDF
+and a combined magic-link email follow asynchronously.
 
-**Next action:** Apply Supabase migrations → Enable anonymous sign-ins → Begin M4.
+The spiritual safety constraint — the platform must never declare a person saved or unsaved
+— is enforced in code and must never be removed.
+
+The project is in a clean, committed, lint-free, TypeScript-clean state. Main branch pushed
+to GitHub. Migrations have not been applied to Supabase.
+
+**Next action:** Apply Supabase migrations → Enable anonymous sign-ins → Begin M4 — Questionnaire Engine (no login required in M4 flow).

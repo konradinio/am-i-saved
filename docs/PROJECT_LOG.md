@@ -5,6 +5,71 @@ A running record of meaningful project history, decisions, and milestones.
 
 ---
 
+## 2026-06-13 — Product Pivot: Anonymous-First Full Funnel (Pre-M4 Decision)
+
+**Type:** Product decision (not a milestone — no code changed)
+**Status:** Approved and documented
+
+### Summary
+
+The primary user funnel was revised before Milestone 4 development began. The new funnel removes all registration friction from the assessment flow and defers email collection to the point of payment.
+
+### Old Funnel
+
+User registers (email + password) → confirms email → signs in → completes assessment → sees summary → pays → gets report by email.
+
+### New Funnel (Approved)
+
+User starts assessment immediately (no login, no registration) → completes assessment anonymously → sees free Executive Summary + Charts → clicks "Unlock Full Report" → enters email only → pays via Stripe → Full Report shown on-screen instantly → PDF download on same page → magic link email for future account access.
+
+### Product Decisions
+
+1. **No registration in the primary funnel.** The `/register` page remains available as a secondary path but is not surfaced during the primary assessment-to-purchase journey.
+
+2. **Email collected at the point of payment (M7), not at assessment start.** Email is the most valuable piece of user data. It is requested at the moment of highest purchase intent — after the user has seen their personalized summary and decided to pay.
+
+3. **No password in the primary funnel.** Users who pay are converted from anonymous to email-linked accounts via `supabase.auth.admin.updateUserById(userId, { email })` in the Stripe webhook. Magic link is their only sign-in mechanism. This reduces support burden and removes a friction point for the target audience (many of whom forget passwords).
+
+4. **No countdown timer on the upsell CTA.** The CTA appears naturally after the summary renders. Countdown timers conflict with the spiritual, reflective tone of the product.
+
+5. **Full Report displayed on-screen immediately after payment.** "Immediately" means within ~30 seconds, with a loading state. The user does not need to check their email to read their report.
+
+6. **Charts shown in the free tier (on the summary page).** Radar chart and bar chart are visible before the paywall. This increases conversion by demonstrating the product's visual quality before asking for payment.
+
+7. **Historical Progress chart deferred to post-launch.** Requires a permanent account with multiple assessments. Not available in the primary funnel until M7+ account system is mature.
+
+8. **Launch pricing: $2.99.** Retained as specified. Can be adjusted post-launch.
+
+9. **No mid-assessment email capture in MVP.** Optional "save your progress" email field during the assessment is a good idea but adds scope. Deferred to a future milestone.
+
+### Security Decisions
+
+- The Stripe webhook now calls `supabase.auth.admin.updateUserById()`, requiring `SUPABASE_SERVICE_ROLE_KEY` in the webhook handler. This was already planned for M7 (payment record insert). No new secret is required.
+- Email collected via the Stripe `customer_email` field in the webhook (not from the pre-checkout form), ensuring the email used for account creation matches the email Stripe validated during payment.
+- Webhook idempotency check required: check `payments` table for existing `stripe_payment_intent_id` before processing.
+
+### Milestone Impact Summary
+
+| Milestone | Change |
+|---|---|
+| M4 Questionnaire | Remove auth dependency; `startAnonymousSession()` at start; no cross-device save in M4 |
+| M5 Summary | Add upsell CTA at bottom of summary page (no countdown timer) |
+| M6 Charts | Charts co-located with summary page (not a separate dashboard page); historical chart deferred |
+| M7 Stripe Paywall | Major rewrite: email form + `customer_email` in checkout + webhook conversion |
+| M8 Full Report | Webhook-triggered; loading state on page; on-screen display; no "check email" step |
+| M9 PDF | Background async; download button on report page; signed URL on-demand |
+| M10 Email | Single combined email: magic link + PDF download link (not just PDF link) |
+
+### Documentation Updated (2026-06-13)
+
+All milestone specs, ROADMAP, PRODUCT_VISION, ACTIVE_MILESTONE, ARCHITECTURE_MASTER, and CLAUDE_SESSION_HANDOFF updated to reflect the approved funnel.
+
+### Next Steps
+
+Begin M4 — Questionnaire Engine. No auth required.
+
+---
+
 ## 2026-06-08 — Milestone 3: Database Schema, RLS & Anonymous Strategy Complete
 
 **Milestone:** 3 — Database

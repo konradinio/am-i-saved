@@ -921,6 +921,40 @@ prior context.
 **Known issues introduced:** none
 **Known issues resolved:** All TypeScript errors and ESLint warnings
 
+### Product Pivot — Anonymous-First Full Funnel (2026-06-13)
+
+**Type:** Product decision — no code changes, documentation only
+**Decision log:** See `PROJECT_LOG.md` entry dated 2026-06-13
+
+**Summary of decisions:**
+- Assessment starts anonymously — no login required (M4 dependency on M2 auth removed)
+- Email collected only at Stripe payment (M7), not at registration
+- Stripe webhook converts anonymous account to email-linked account via `supabase.auth.admin.updateUserById()`
+- No password in primary funnel — magic link is the only sign-in method for converted users
+- Full report displayed on-screen immediately after payment (loading state, ~15–30 seconds)
+- Charts shown on summary page (free tier), not on a separate dashboard page
+- Historical Progress chart deferred to post-launch
+- No countdown timer on upsell CTA
+- No mid-assessment email capture in MVP
+- Launch pricing: $2.99
+
+**Files updated (docs only, no code):**
+- `docs/MILESTONE_04_QUESTIONNAIRE.md` — removed auth dependency, added anonymous session strategy
+- `docs/MILESTONE_05_AI_EXEC_SUMMARY.md` — added upsell CTA specification
+- `docs/MILESTONE_06_CHARTS.md` — charts on summary page, historical chart deferred
+- `docs/MILESTONE_07_STRIPE_PAYWALL.md` — complete rewrite: email form, webhook conversion, admin API
+- `docs/MILESTONE_08_FULL_REPORT.md` — webhook-triggered, loading state, on-screen display
+- `docs/MILESTONE_09_PDF.md` — background generation, download button on report page
+- `docs/MILESTONE_10_EMAIL.md` — combined magic link + PDF delivery email
+- `docs/ROADMAP.md` — phases 4–10 updated
+- `docs/PRODUCT_VISION.md` — funnel description and monetization table updated
+- `docs/ACTIVE_MILESTONE.md` — M4 preview updated
+- `docs/ARCHITECTURE_MASTER.md` — Data Flow and Authentication Flow updated
+- `docs/CLAUDE_SESSION_HANDOFF.md` — handoff summary and anonymous strategy updated
+- `docs/PROJECT_LOG.md` — decision entry added
+
+---
+
 ### Milestone 3 — Database Schema, RLS & Anonymous Strategy (2026-06-08) ✅
 
 **Status:** Complete

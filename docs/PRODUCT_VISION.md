@@ -1,7 +1,7 @@
 # Product Vision
 ## Am I Saved?
 
-**Version:** 1.0.0 | **Created:** 2026-06-06
+**Version:** 1.1.0 | **Created:** 2026-06-06 | **Updated:** 2026-06-13
 
 ---
 
@@ -41,11 +41,26 @@ Am I Saved? exists to give every Christian — and every sincere seeker — an h
 
 | Product | Price | Notes |
 |---|---|---|
-| Spiritual Assessment | Free | Executive Summary always included |
-| Full Spiritual Report | Paid (TBD) | Full narrative, PDF, email delivery |
+| Spiritual Assessment + Executive Summary + Charts | Free | No login, no registration required |
+| Full Spiritual Report + PDF + Email | $2.99 | Email collected at payment — no password required |
 | Gift Assessment | Paid (TBD) | Code-based gift for another person |
 | Coaching Session | Paid per session | One-on-one spiritual coaching |
 | Sponsored Coaching | Paid by sponsor | Funds coaching for someone who cannot afford it |
+
+### Primary Conversion Funnel (Anonymous-First)
+
+The primary user funnel requires no account creation:
+
+1. **Assess** — User starts immediately with no login. Anonymous Supabase session created silently.
+2. **Reflect** — Executive Summary + Charts shown for free on the summary page.
+3. **Decide** — Upsell CTA: *"Unlock Full Report — $2.99"* — no countdown timer.
+4. **Convert** — Email only collected here (no password, no registration form).
+5. **Pay** — Stripe Checkout with pre-filled email.
+6. **Receive** — Full Report visible on-screen within ~30 seconds of payment.
+7. **Download** — PDF download button on same page.
+8. **Return** — Magic link emailed for future account access (no password required, ever).
+
+Registration (`/register`) and password login remain available as secondary paths for users who specifically want a traditional account.
 
 ---
 

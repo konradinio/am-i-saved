@@ -77,13 +77,19 @@ A new Claude session should read `CLAUDE_SESSION_HANDOFF.md` first.
 Scope:
 - JSON question definitions in `data/questionnaire/`
 - Multi-path assessment engine (denomination-aware paths)
-- Assessment start page — calls `startAnonymousSession()`, creates `assessments` row
+- Assessment start page — calls `startAnonymousSession()` silently, creates `assessments` row
+- No login required — anonymous Supabase session used throughout
 - Question step pages — saves `assessment_responses` rows
 - Profile completion during assessment (nickname, denomination, age range)
-- Assessment progress auto-save
-- Assessment history page
+- Privacy nudge displayed before free-text answer fields
+- Assessment progress auto-save (same-browser resume via anonymous cookie)
 - Submit assessment → transitions status to `submitted`
 
 Dependencies:
 - M3 complete (done) — assessments, assessment_responses tables created
 - Anonymous session strategy implemented (done)
+- Anonymous sign-ins enabled in Supabase Dashboard (required before M4 testing)
+
+Not in scope for M4:
+- Assessment history page (requires permanent account — deferred to post-M7)
+- Cross-device save and resume (requires email collection — not available until M7)

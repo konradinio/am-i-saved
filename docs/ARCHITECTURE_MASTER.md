@@ -1,10 +1,10 @@
 # Architecture Master Document
 ## Am I Saved? — Christian Spiritual Reflection Platform
 
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Created:** 2026-06-06
-**Last updated:** 2026-06-08
-**Milestone:** 3 — Database
+**Last updated:** 2026-06-13
+**Milestone:** 3 — Database (product funnel revised pre-M4)
 
 ---
 
@@ -100,19 +100,27 @@ Am I Saved? is a modular, server-first web platform built on Next.js 16 (App Rou
 ```
 User
   → Homepage
-  → Start Assessment (requires Auth — M2)
-  → Questionnaire Engine (M4) — auto-saves progress
+  → Start Assessment — NO LOGIN REQUIRED
+  → startAnonymousSession() → anonymous auth.users entry (is_anonymous = true)
+  → Questionnaire Engine (M4) — auto-saves progress to anonymous user_id
   → Submit Assessment
   → OpenAI: Executive Summary (M5) — server-side only
-  → Charts displayed (M6)
-  → [Free users stop here]
-  → Stripe Checkout (M7)
-  → Payment confirmed via Webhook (M7)
-  → OpenAI: Full Report (M8) — server-side only
-  → React-PDF: Generate PDF (M9) — API route only
+  → Charts displayed on same page as summary (M6) — FREE TIER
+  → [Free users stop here — upsell CTA visible]
+  → User clicks "Unlock Full Report" → email collection form
+  → Stripe Checkout — email + anonymous user_id in metadata
+  → Payment confirmed via Webhook (M7):
+      → supabase.auth.admin.updateUserById(userId, { email }) — anonymous→email account
+      → INSERT payments record
+      → generateFullReport() triggered
+  → User redirected to /assessment/[id]/full-report (loading state)
+  → OpenAI: Full Report (M8) — server-side, triggered from webhook
+  → Report renders on-screen when ready (~15–30 seconds)
+  → React-PDF: Generate PDF (M9) — API route only, async after report text ready
   → Supabase Storage: Upload PDF (M9)
-  → Resend: Email secure download link (M10)
-  → User downloads PDF
+  → "Download PDF" button activates on report page
+  → Resend: Combined email — magic link + PDF download link (M10)
+  → User returns to account via magic link (no password required, ever)
 ```
 
 ---
@@ -140,13 +148,14 @@ export async function proxy(request: NextRequest) { ... }
 Do NOT create `src/middleware.ts` — it will silently do nothing in v16.
 
 ### Authentication Flow (M2+)
-1. User chooses password login or magic link on `/login`
-2. Password: `signInWithPassword` via Supabase Auth
-3. Magic link: `signInWithOtp` → email sent → user clicks → `/auth/callback` exchanges code for session
-4. `proxy.ts` calls `auth.getUser()` on every request to refresh the session cookie
-5. Protected routes call `requireUser()` — server-side session verification
-6. Client-side auth state is never trusted
-7. Anonymous users can access all assessment routes (auth presented at full report paywall — M7)
+1. Anonymous users access all assessment routes — no login prompted (M4+)
+2. At payment (M7): email collected → Stripe webhook converts anonymous account to email-linked account
+3. Magic link is the primary returning-user sign-in method (no password required in primary funnel)
+4. `/login` magic link: user enters email → Supabase sends OTP → user clicks → `/auth/callback` exchanges code for session
+5. `/login` password: `signInWithPassword` — available for users who registered with password
+6. `proxy.ts` calls `auth.getUser()` on every request to refresh the session cookie
+7. Protected routes call `requireUser()` — server-side session verification
+8. Client-side auth state is never trusted
 
 ### Anonymous-First Flow (M3+)
 
@@ -155,8 +164,14 @@ assessment, `startAnonymousSession()` creates a real Supabase `auth.users` entry
 `is_anonymous = true`. All data is saved with this `user_id`. RLS works identically
 for anonymous and permanent users — no NULL user_id, no service-role bypass needed.
 
-**Account conversion:** Call `supabase.auth.updateUser({ email, password })` on the
-anonymous session. The `user_id` stays the same — zero data migration.
+**Primary conversion path (M7 Stripe webhook):**
+`supabase.auth.admin.updateUserById(userId, { email })` — email-only conversion, no password.
+The `user_id` stays the same — zero data migration. The `is_anonymous` flag becomes `false`.
+Magic link is the sole future sign-in method for these accounts.
+
+**Secondary conversion path (registration form):**
+`supabase.auth.updateUser({ email, password })` — full account with password.
+Used by users who click `/register` directly (not the primary funnel).
 
 **Anonymous cleanup:** Unconverted anonymous users are not deleted automatically.
 A cron cleanup job (delete `is_anonymous = true` users older than 30 days with no

@@ -1,7 +1,7 @@
 # Roadmap
 ## Am I Saved?
 
-**Version:** 1.0.0 | **Updated:** 2026-06-06
+**Version:** 1.1.0 | **Updated:** 2026-06-13
 
 ---
 
@@ -47,88 +47,97 @@
 
 ## Phase 4 — Questionnaire Engine (Milestone 4)
 
-**Goal:** Users can complete a multi-page spiritual assessment.
+**Goal:** Users can complete a multi-page spiritual assessment immediately — no login or registration required.
 
-- Questionnaire engine with progress saving
+- Anonymous session created silently at assessment start (`startAnonymousSession()`)
 - Denomination path selection (Catholic, Protestant, Orthodox, General)
 - All question types: single choice, multiple choice, Likert, free text
+- Privacy nudge before free-text answer fields
 - Auto-save on each answer
 - Progress indicator
+- Same-browser save and resume (anonymous session cookie)
 - Assessment completion flow
 
 ---
 
-## Phase 5 — AI Executive Summary (Milestone 5)
+## Phase 5 — AI Executive Summary + Upsell Gateway (Milestone 5)
 
-**Goal:** Users receive a free AI-generated spiritual summary.
+**Goal:** Users receive a free AI-generated spiritual summary. The summary page is the gateway to the paid report.
 
 - OpenAI integration (server-side only)
 - Executive Summary generation with structured prompt
 - Spiritual safety guardrails enforced in every prompt
 - Prompt versioning
 - Result persisted to Supabase
-- Summary displayed on assessment summary page
+- Summary displayed on assessment summary page, including charts (Phase 6)
+- Upsell CTA after summary: *"Unlock Full Report — $2.99"* — no countdown timer
 
 ---
 
 ## Phase 6 — Professional Charts (Milestone 6)
 
-**Goal:** Visual spiritual health analytics displayed in browser.
+**Goal:** Visual spiritual health analytics displayed on the summary page as part of the free tier.
 
-- Spiritual Health Radar Chart (8 dimensions)
-- Strengths vs Growth Areas bar chart
-- Spiritual Growth Dashboard
-- Historical progress tracking (multi-assessment)
+- Spiritual Health Radar Chart (8 dimensions) — on summary page
+- Strengths vs Growth Areas bar chart — on summary page
 - Mobile responsive charts
 - Charts export-ready for PDF
+- Historical progress tracking deferred to post-launch
 
 ---
 
 ## Phase 7 — Stripe Paywall (Milestone 7)
 
-**Goal:** Users can purchase the Full Spiritual Report.
+**Goal:** Users can purchase the Full Spiritual Report. Email is collected here — no password, no registration form.
 
-- Stripe Checkout integration
-- Apple Pay, Google Pay, Cards, Link
-- Webhook handler with signature verification
-- Payment record persisted in Supabase
-- Full report unlocked based on database payment (never client claim)
-- Gift code purchase flow
+- Email collection form (email only) shown before Stripe Checkout
+- Stripe Checkout with `customer_email` and `metadata: { user_id }` (anonymous user)
+- Apple Pay, Google Pay, Cards, Stripe Link
+- Webhook handler with stripe-signature verification
+- Webhook converts anonymous account to email-linked account (Supabase Admin API)
+- Payment record persisted in Supabase by webhook (never by client)
+- Full report generation triggered from webhook
+- Redirect to full report page (loading state while generating)
 
 ---
 
 ## Phase 8 — Full AI Report (Milestone 8)
 
-**Goal:** Paid users receive a comprehensive spiritual narrative.
+**Goal:** Paid users see a comprehensive spiritual narrative on-screen immediately after payment — no "check your email" required.
 
-- Full report generation via OpenAI (server-side)
+- Full report generation triggered from M7 webhook (server-side only)
 - Category-by-category breakdown
 - Scripture, prayer, and coaching recommendations
 - Personal action plan
 - Confession preparation notes
 - Report persisted to Supabase
+- Full report page with loading state (polls until ready, ~15–30 seconds)
+- Report renders on-screen automatically when ready
+- PDF download button appears on same page when PDF is available (Phase 9)
 
 ---
 
 ## Phase 9 — PDF Generation (Milestone 9)
 
-**Goal:** Full reports are available as professional PDFs.
+**Goal:** Full reports are available for download directly on the report page.
 
-- React-PDF generation in API route (server-side only)
-- PDF includes: Logo, Date, User Name, Charts, Analysis, Disclaimer
+- React-PDF generation in API route (server-side only), triggered after report text is ready
+- PDF includes: Logo, Date, User Nickname, Charts, Analysis, Disclaimer
 - Upload to Supabase Storage
-- Signed time-limited download URLs
+- "Download PDF" button on full report page — activates when PDF is uploaded
+- Signed URLs generated on-demand per click (48-hour expiry)
 
 ---
 
 ## Phase 10 — Email Delivery (Milestone 10)
 
-**Goal:** Reports are delivered to user's inbox.
+**Goal:** One combined email gives users their PDF download link and magic link account access — no password ever set.
 
-- Resend integration
-- Email with secure PDF download link (never raw content in body)
-- Gift code redemption emails
-- Coaching confirmation emails
+- Single Resend email containing: View Report magic link + Download PDF signed URL + Access My Account magic link
+- Magic link generated server-side via Supabase Admin API (`generateLink`)
+- Magic link is the only sign-in method for converted users (no password)
+- Gift code redemption emails (stub in M10, implemented in M11)
+- "We also emailed you a copy" confirmation on full report page
 
 ---
 
