@@ -205,6 +205,33 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Cinematic hero — slow Ken Burns drift on the rescue image */
+@keyframes ken-burns {
+  0%   { transform: scale(1.04) translate3d(0, 0, 0); }
+  100% { transform: scale(1.12) translate3d(-1.2%, -1.2%, 0); }
+}
+
+/* Staged fade-up for hero copy over the image */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-kenburns {
+  animation: ken-burns 26s ease-out forwards;
+  will-change: transform;
+}
+
+.hero-rise {
+  opacity: 0;
+  animation: hero-rise 1s ease-out forwards;
+}
+.hero-rise-1 { animation-delay: 0.15s; }
+.hero-rise-2 { animation-delay: 0.4s; }
+.hero-rise-3 { animation-delay: 0.65s; }
+.hero-rise-4 { animation-delay: 0.9s; }
+.hero-rise-5 { animation-delay: 1.15s; }
+
 /* ─── Scroll reveal ───────────────────────────────────────── */
 .reveal {
   opacity: 0;

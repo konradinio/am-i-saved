@@ -37,8 +37,8 @@ and confirmed the current milestone, current status, and open issues.
 | **Technical name** | `am-i-saved` |
 | **GitHub remote** | `https://github.com/konradinio/am-i-saved.git` |
 | **Current branch** | `main` |
-| **Current milestone** | **M3 — Complete. Visual identity — Complete. M4 — Not started.** |
-| **Current status** | Homepage redesign and visual identity complete. Ready to begin M4. |
+| **Current milestone** | **M3 — Complete. Visual identity + cinematic hero — Complete. M4 — Not started.** |
+| **Current status** | Homepage hero rebuilt around a cinematic rescue image. Development paused for handoff at high context usage. Ready to begin M4. |
 | **TypeScript** | Zero errors |
 | **ESLint** | Zero warnings |
 
@@ -81,8 +81,8 @@ This is a hard architectural constraint, not a style preference.
 
 | System | Status | Notes |
 |---|---|---|
-| **Git** | ✅ Initialized | 10 commits on `main` (after visual identity) |
-| **GitHub** | ⚠️ Not yet pushed | Push after visual identity commits |
+| **Git** | ✅ Initialized | 18 commits on `main` (after hero redesign) |
+| **GitHub** | ⚠️ Not yet pushed | Run `git push -u origin main` when ready |
 | **Supabase** | ✅ Credentials set | `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
 | **Supabase DB** | ⚠️ Migrations not yet applied | 8 migration files exist; apply via Dashboard SQL Editor |
 | **Storage bucket** | ⚠️ Not yet created | Create private bucket `reports` in Supabase Dashboard |
@@ -137,9 +137,9 @@ Inspired by Matthew 14:22-33. Central motif: two hands reaching toward each othe
 waterline (Matthew 14:28). Cormorant Garamond italic for display headings.
 
 **New components:**
-- `src/components/ui/WaveDivider.tsx` — CSS-only animated dual-layer SVG wave
-- `src/components/ui/HandsMotif.tsx` — abstract SVG two-hands illustration
+- `src/components/ui/WaveDivider.tsx` — CSS-only animated dual-layer SVG wave (NOTE: no longer used on the homepage after the hero redesign; kept as a reusable section-transition element)
 - `src/components/ui/ScrollReveal.tsx` — IntersectionObserver scroll reveal (client component)
+- `src/components/ui/HandsMotif.tsx` — **DELETED 2026-06-14.** Was an abstract/realistic SVG two-hands illustration. Replaced entirely by the cinematic hero image (see below). Do NOT recreate it — the user explicitly rejected SVG/vector/illustration approaches for the hands.
 
 **New design tokens (in `globals.css` @theme):**
 - `--color-teal: #1a6b7a` — Ocean Teal
@@ -154,13 +154,43 @@ waterline (Matthew 14:28). Cormorant Garamond italic for display headings.
 **Pages rewritten:** homepage, how-it-works, assessment start, step, summary, full-report
 **Pages updated:** Footer (abyss bg), pricing ($TBD → $2.99)
 
+### Cinematic Hero Redesign ✅ (2026-06-14)
+
+**Why:** The user judged the SVG hands illustration (abstract and the later "realistic acrylic"
+attempt) as failing to achieve the desired emotional quality. Explicit, permanent directive:
+**do NOT recreate the hands with SVG / CSS shapes / vector / gradients / custom drawing.** Use the
+supplied artwork as a cinematic hero image and build the UX around it.
+
+**Asset:**
+- `public/hero/jesus-rescues-peter.png` (~2.5 MB) — supplied AI-generated artwork of Jesus
+  grasping Peter's hand as he sinks; sunrise breaking over the sea (Matthew 14:22-33). This is
+  art direction / photography — treat it as the focal emotional element. Do not redraw it.
+
+**Homepage hero (`src/app/page.tsx`) — full rewrite of the hero section:**
+- Full-bleed `next/image` (`fill`, `priority`, `quality={90}`, `object-cover`,
+  `objectPosition: "62% center"` to keep the clasped hands + faces framed on narrow viewports).
+- Slow Ken Burns drift (`.hero-kenburns` → `@keyframes ken-burns`, 26s).
+- Three `pointer-events-none` overlays: top scrim (nav legibility), bottom scrim (anchors copy,
+  dissolves into `#071523`), radial vignette. Focal zone deliberately left lightly-overlaid.
+- Staged copy fade-in (`.hero-rise` + `.hero-rise-1..5` delays → `@keyframes hero-rise`).
+- Headline still Cormorant Garamond Light Italic, now with layered text-shadows for legibility.
+- Scripture changed to **"Lord, save me." — Matthew 14:30** (Peter's actual cry; was 14:28).
+- `HandsMotif` and `WaveDivider` removed from the homepage; `HandsMotif.tsx` deleted from repo.
+
+**New keyframes/classes in `globals.css`:** `ken-burns`, `hero-rise`, `.hero-kenburns`,
+`.hero-rise` + `.hero-rise-1..5`. All disabled under `prefers-reduced-motion`.
+
 ---
 
 ## 5. In Progress
 
-**Nothing is currently in progress.**
+**Nothing is in progress. Development is PAUSED for handoff (high context usage).**
 
-Visual identity is complete. Project is ready to begin M4.
+The cinematic hero redesign is complete, committed, and lint/TypeScript-clean.
+Do NOT start M4 — the previous session was explicitly told to pause before M4.
+The hero visual has not yet been viewed in a browser by the user; if they request changes,
+the likely knobs are: `objectPosition`, scrim opacity values, and Ken Burns
+duration/scale — all in `src/app/page.tsx` and `src/app/globals.css`.
 
 ---
 
@@ -288,10 +318,12 @@ theme, Cormorant Garamond display font, and animated SVG components. The homepag
 fully rewritten. The How It Works, assessment start, step, summary, and full report pages are
 all visually styled and ready for M4 feature implementation.
 
-**Design identity:** Waterline metaphor (Matthew 14:22-33). Warm gold sky → animated wave →
-deep teal ocean. Two hands reaching across the waterline (Matthew 14:28) as central motif.
-Cormorant Garamond Light Italic for display headings. Abyss (#071523) background on
-footer and deep sections.
+**Design identity:** Waterline metaphor (Matthew 14:22-33). Warm gold sky → ocean. The homepage
+hero is now a **full-bleed cinematic photograph/artwork** (`public/hero/jesus-rescues-peter.png`)
+of Jesus rescuing Peter from the waves, with Ken Burns motion, gradient scrims, and staged
+copy fade-in layered on top. Cormorant Garamond Light Italic for display headings. Abyss
+(#071523) background on footer and deep sections. **The hands are NEVER to be redrawn as
+SVG/vector/illustration — this was an explicit user directive.**
 
 **Product funnel (revised 2026-06-13):** Anonymous-first. No login required to start or
 complete the assessment. Email is collected only at the point of payment (M7). The Stripe

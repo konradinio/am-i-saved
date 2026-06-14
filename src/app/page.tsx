@@ -1,7 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { WaveDivider } from "@/components/ui/WaveDivider";
-import { HandsMotif } from "@/components/ui/HandsMotif";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { BarChart2, BookOpen, Download, FileText, Shield, Heart } from "lucide-react";
 
@@ -66,54 +65,94 @@ const trustPoints = [
 export default function HomePage() {
   return (
     <div className="flex flex-col">
-      {/* ─── Hero: Sky Zone + Wave + Ocean Zone ─────────────── */}
+      {/* ─── Cinematic Hero — the rescue, as art direction ──── */}
       <section
-        className="relative overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(180deg, #3D1E08 0%, #1A2540 30%, #0f1f3c 52%, #0d2a3a 70%, #071523 100%)",
-        }}
+        className="relative w-full overflow-hidden"
+        style={{ minHeight: "92vh", backgroundColor: "#071523" }}
       >
-        {/* Sun / sky radial glow */}
+        {/* The artwork itself — full-bleed, slow Ken Burns drift */}
+        <div className="absolute inset-0 hero-kenburns">
+          <Image
+            src="/hero/jesus-rescues-peter.png"
+            alt="Jesus reaching down from the storm to grasp the hand of Peter as he sinks beneath the waves, the sunrise breaking over the sea — Matthew 14"
+            fill
+            priority
+            sizes="100vw"
+            quality={90}
+            className="object-cover"
+            style={{ objectPosition: "62% center" }}
+          />
+        </div>
+
+        {/* Top scrim — keeps the nav legible over the bright sky */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-x-0 top-0 h-40 pointer-events-none z-[1]"
           style={{
             background:
-              "radial-gradient(ellipse 70% 35% at 50% 2%, rgba(232,165,53,0.22) 0%, transparent 100%)",
+              "linear-gradient(180deg, rgba(7,21,35,0.55) 0%, rgba(7,21,35,0.15) 55%, transparent 100%)",
           }}
         />
 
-        {/* Sky zone — hero content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-4 pt-24 pb-8 md:pt-36 md:pb-12">
+        {/* Bottom scrim — anchors the headline and dissolves into the page */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{
+            background:
+              "linear-gradient(180deg, transparent 0%, transparent 42%, rgba(7,21,35,0.45) 66%, rgba(7,21,35,0.88) 86%, #071523 100%)",
+          }}
+        />
+
+        {/* Cinematic vignette */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{
+            background:
+              "radial-gradient(ellipse 90% 80% at 55% 45%, transparent 55%, rgba(7,21,35,0.4) 100%)",
+          }}
+        />
+
+        {/* Hero copy — anchored to the waterline at the bottom */}
+        <div className="relative z-10 flex min-h-[92vh] flex-col items-center justify-end text-center px-4 pb-16 md:pb-24">
           <div className="max-w-3xl mx-auto">
             <p
-              className="text-sm font-semibold uppercase tracking-[0.2em] mb-6"
-              style={{ color: "#e8a535" }}
+              className="hero-rise hero-rise-1 text-xs sm:text-sm font-semibold uppercase tracking-[0.25em] mb-5"
+              style={{ color: "#f0c674", textShadow: "0 2px 12px rgba(7,21,35,0.7)" }}
             >
               Christian Spiritual Reflection
             </p>
 
             <h1
-              className="text-6xl md:text-8xl lg:text-9xl text-ivory leading-none mb-6"
-              style={{ fontFamily: "var(--font-display)", fontWeight: 300, fontStyle: "italic" }}
+              className="hero-rise hero-rise-2 text-6xl md:text-8xl lg:text-9xl text-ivory leading-none mb-6"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 300,
+                fontStyle: "italic",
+                textShadow: "0 4px 30px rgba(7,21,35,0.8), 0 1px 4px rgba(7,21,35,0.6)",
+              }}
             >
               Am I Saved?
             </h1>
 
-            <p className="text-xl md:text-2xl text-ivory/75 leading-relaxed mb-4">
+            <p
+              className="hero-rise hero-rise-3 text-xl md:text-2xl text-ivory/90 leading-relaxed mb-3"
+              style={{ textShadow: "0 2px 16px rgba(7,21,35,0.8)" }}
+            >
               Discover where you are on your journey toward salvation.
             </p>
 
-            <p className="text-base text-ivory/50 leading-relaxed max-w-xl mx-auto mb-10">
+            <p
+              className="hero-rise hero-rise-3 text-base text-ivory/65 leading-relaxed max-w-xl mx-auto mb-10"
+              style={{ textShadow: "0 2px 12px rgba(7,21,35,0.7)" }}
+            >
               A guided self-reflection grounded in scripture and Christian tradition.
               No account required. No judgment rendered. Only honest clarity.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+            <div className="hero-rise hero-rise-4 flex flex-col sm:flex-row items-center justify-center gap-4 mb-9">
               <Link href="/assessment/start">
                 <Button
                   size="lg"
-                  className="bg-gold text-navy hover:bg-gold/90 font-semibold text-base px-10 py-6 rounded-xl shadow-lg"
+                  className="bg-gold text-navy hover:bg-gold/90 font-semibold text-base px-10 py-6 rounded-xl shadow-2xl"
                 >
                   Begin Reflection
                 </Button>
@@ -122,54 +161,38 @@ export default function HomePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white/25 text-ivory hover:bg-white/10 text-base px-8 py-6 rounded-xl"
+                  className="border-white/35 text-ivory hover:bg-white/10 text-base px-8 py-6 rounded-xl backdrop-blur-sm"
                 >
                   How It Works
                 </Button>
               </Link>
             </div>
 
+            {/* Scripture — the moment on screen, named */}
+            <p
+              className="hero-rise hero-rise-5 text-sm md:text-base italic mb-8"
+              style={{ color: "rgba(240,221,180,0.85)", textShadow: "0 2px 14px rgba(7,21,35,0.8)" }}
+            >
+              &ldquo;Lord, save me.&rdquo;
+              <span className="not-italic text-xs ml-2" style={{ color: "rgba(240,221,180,0.55)" }}>
+                Matthew 14:30
+              </span>
+            </p>
+
             {/* Trust indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-ivory/40">
+            <div className="hero-rise hero-rise-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-ivory/55">
               {["No account required", "No email needed to start", "Free executive summary"].map(
                 (label) => (
                   <span key={label} className="flex items-center gap-2">
                     <span
                       className="inline-block w-1.5 h-1.5 rounded-full shrink-0"
-                      style={{ backgroundColor: "rgba(201,151,58,0.6)" }}
+                      style={{ backgroundColor: "rgba(240,198,116,0.8)" }}
                     />
                     {label}
                   </span>
                 )
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Animated wave divider */}
-        <WaveDivider />
-
-        {/* Ocean zone — hands motif */}
-        <div className="relative flex flex-col items-center px-4 py-16 md:py-20">
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(ellipse 50% 70% at 50% 70%, rgba(26,107,122,0.15) 0%, transparent 70%)",
-            }}
-          />
-          <div className="relative z-10 flex flex-col items-center">
-            <HandsMotif />
-            <p
-              className="text-sm italic mt-8 text-center max-w-xs leading-relaxed"
-              style={{ color: "rgba(168,216,228,0.65)" }}
-            >
-              &ldquo;Lord, if it is you, bid me come to you on the water.&rdquo;
-              <br />
-              <span className="text-xs" style={{ opacity: 0.7 }}>
-                Matthew 14:28
-              </span>
-            </p>
           </div>
         </div>
       </section>
