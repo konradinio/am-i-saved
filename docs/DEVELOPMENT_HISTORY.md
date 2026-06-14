@@ -952,6 +952,7 @@ prior context.
 - `docs/ARCHITECTURE_MASTER.md` — Data Flow and Authentication Flow updated
 - `docs/CLAUDE_SESSION_HANDOFF.md` — handoff summary and anonymous strategy updated
 - `docs/PROJECT_LOG.md` — decision entry added
+- `docs/security.md` — version 2.0.0: full rewrite covering anonymous assessment model, webhook Admin API usage, passwordless auth, email risks, PDF/signed URL security, RLS assumptions, and future production requirements
 
 ---
 

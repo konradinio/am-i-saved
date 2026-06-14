@@ -64,6 +64,8 @@ User starts assessment immediately (no login, no registration) → completes ass
 
 All milestone specs, ROADMAP, PRODUCT_VISION, ACTIVE_MILESTONE, ARCHITECTURE_MASTER, and CLAUDE_SESSION_HANDOFF updated to reflect the approved funnel.
 
+`docs/security.md` updated separately (version 2.0.0) to document: anonymous assessment security model, anonymous-to-email conversion in webhook, passwordless magic-link authentication, Stripe webhook Admin API usage and safeguards, email typo and delivery risks, email verification strategy, sensitive assessment data protection, PDF access security, signed URL strategy, RLS assumptions, and future production security requirements.
+
 ### Next Steps
 
 Begin M4 — Questionnaire Engine. No auth required.
