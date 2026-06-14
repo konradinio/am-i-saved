@@ -22,7 +22,7 @@ export default function PricingPage() {
         </div>
         <div className="border border-gold/40 rounded-2xl p-8 bg-gold/5">
           <h2 className="text-2xl font-bold text-ivory mb-2">Full Report</h2>
-          <p className="text-gold text-4xl font-bold mb-4">$TBD</p>
+          <p className="text-gold text-4xl font-bold mb-4">$2.99</p>
           <ul className="text-ivory/60 space-y-2 text-sm">
             <li>✓ Everything in Free</li>
             <li>✓ Full narrative analysis</li>

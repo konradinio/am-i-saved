@@ -5,7 +5,7 @@ const DISCLAIMER =
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-navy mt-auto">
+    <footer className="border-t border-white/10 mt-auto" style={{ backgroundColor: "#071523" }}>
       <div className="container mx-auto px-4 md:px-6 py-10">
         {/* Spiritual safety disclaimer */}
         <p className="text-center text-xs text-ivory/50 max-w-2xl mx-auto mb-8 leading-relaxed">
